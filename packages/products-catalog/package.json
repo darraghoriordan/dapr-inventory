@@ -1,0 +1,81 @@
+{
+    "name": "products-catalog",
+    "version": "1.0.0",
+    "description": "",
+    "author": "",
+    "private": true,
+    "license": "UNLICENSED",
+    "scripts": {
+        "prebuild": "rimraf dist",
+        "build": "nest build",
+        "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+        "start": "nest start",
+        "start:dev": "nest start --watch",
+        "start:debug": "nest start --debug --watch",
+        "start:prod": "node dist/main",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "prettier": "prettier --write src/*",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:cov": "jest --coverage",
+        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+        "test:e2e": "jest --config ./test/jest-e2e.json"
+    },
+    "dependencies": {
+        "@nestjs/common": "8.4.7",
+        "@nestjs/config": "2.1.0",
+        "@nestjs/core": "8.4.7",
+        "@nestjs/platform-express": "8.4.7",
+        "@nestjs/swagger": "5.2.1",
+        "class-transformer": "0.5.1",
+        "class-validator": "0.13.2",
+        "reflect-metadata": "0.1.13",
+        "rimraf": "3.0.2",
+        "rxjs": "7.4.0",
+        "swagger-ui-express": "4.4.0",
+        "tslog": "3.3.3"
+    },
+    "devDependencies": {
+        "@darraghor/eslint-plugin-nestjs-typed": "3.10.1",
+        "@nestjs/cli": "8.2.8",
+        "@nestjs/schematics": "8.0.11",
+        "@types/express": "4.17.13",
+        "@types/jest": "27.5.0",
+        "@types/node": "16.0.0",
+        "@typescript-eslint/eslint-plugin": "5.30.0",
+        "@typescript-eslint/parser": "5.30.0",
+        "eslint": "8.3.0",
+        "eslint-config-prettier": "8.3.0",
+        "eslint-plugin-eslint-comments": "3.2.0",
+        "eslint-plugin-jest": "25.3.0",
+        "eslint-plugin-prefer-arrow": "1.2.3",
+        "eslint-plugin-promise": "5.2.0",
+        "eslint-plugin-sonarjs": "0.11.0",
+        "eslint-plugin-unicorn": "39.0.0",
+        "jest": "28.0.3",
+        "prettier": "^2.3.2",
+        "source-map-support": "0.5.20",
+        "ts-jest": "28.0.1",
+        "ts-loader": "9.3.1",
+        "ts-node": "10.8.1",
+        "tsconfig-paths": "4.0.0",
+        "typescript": "4.7.4"
+    },
+    "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "ts"
+        ],
+        "rootDir": "src",
+        "testRegex": ".*\\.spec\\.ts$",
+        "transform": {
+            "^.+\\.(t|j)s$": "ts-jest"
+        },
+        "collectCoverageFrom": [
+            "**/*.(t|j)s"
+        ],
+        "coverageDirectory": "../coverage",
+        "testEnvironment": "node"
+    }
+}
