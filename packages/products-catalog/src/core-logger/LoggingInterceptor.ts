@@ -18,7 +18,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
         const {originalUrl, method, params, query, body} = request;
 
-        this.logger.log({
+        this.logger.log(`Request ${originalUrl}`, {
             type: "REQUEST",
             originalUrl,
             method,
@@ -29,7 +29,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap((data) =>
-                this.logger.log({
+                this.logger.log(`Response ${originalUrl}`, {
                     type: "RESPONSE",
                     originalUrl,
                     method,

@@ -6,26 +6,64 @@ Inventory - product stock adjustments (updates PO), low stock level alert - stro
 SOs - create sales order, change SO state - use postgres?
 Shipping - print label, pick items (updates SO) - no store?
 
-add products package
+# add products package
 
-- use nestjs for this one
-- use dynamo with normal consistency
+-   use nestjs for this one
+-   use dynamo with normal consistency
 
-add po's
+added a basic nestjs app
+pre-populate, only have GET?
+display on a ui for customer
+added docker compose for the products api
+added dapr configurations
 
-- use kotlin
-- use postgres
+## model
 
-add inventory
+name
+description
+inventoryId
 
-- .net
-- strong consistency dynamo
+# add po's
 
-add so's
+-   use kotlin
+-   use postgres
 
-- use .net
-- postgres
+## Raises Events
 
-add shipping
+POCreated
+POCanceled
+POCompleted
 
-- nest js
+## listens to events
+
+# Add Inventory
+
+-   .net
+-   strong consistency dynamo
+
+## model
+
+inventoryID: string
+value: number
+
+## commands
+
+AdjustInventory
+GetInventory
+
+## Raises Events
+
+## Listens to events
+
+POCompleted
+
+-- phase 2!!!
+
+# add so's
+
+-   use .net
+-   postgres
+
+# add shipping
+
+-   nest js
