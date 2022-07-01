@@ -10,7 +10,7 @@ export class ProductsController {
 
     @ApiOkResponse({isArray: true, type: ProductDto})
     @Get()
-    getAllProducts(): ProductDto[] {
+    getAllProducts(): Promise<ProductDto[]> {
         return this.productService.getAllProducts();
     }
 }

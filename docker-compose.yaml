@@ -7,11 +7,16 @@ services:
     zipkin:
         image: openzipkin/zipkin-slim
 
+    dynamodb-instance:
+        image: amazon/dynamodb-local
+        command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+
     products-api:
         image: ${REGISTRY:-daprinventory}/products.api:${TAG:-latest}
         build:
             context: ./packages/products-catalog
-
+        depends_on:
+            - dynamodb-instance
     products-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.7.4"
         network_mode: "service:products-api"
