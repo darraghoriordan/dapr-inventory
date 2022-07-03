@@ -1,5 +1,4 @@
 import {DaprCommsConfigurationService} from "./DaprCommsConfigurationService";
-import CoreLoggerService from "../core-logger/CoreLoggerService";
 import {DaprClient} from "@dapr/dapr";
 
 export const DaprClientProvider = {
@@ -21,5 +20,5 @@ export const DaprClientProvider = {
             throw error;
         }
     },
-    inject: [DaprCommsConfigurationService, CoreLoggerService],
+    inject: [DaprCommsConfigurationService],
 };

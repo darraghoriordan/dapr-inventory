@@ -1,11 +1,8 @@
-import {DaprClient, DaprServer} from "@dapr/dapr";
 import {Module} from "@nestjs/common";
 import {ConfigModule} from "@nestjs/config";
-import DaprAppConfig from "./DaprAppConfig";
 import {DaprAppConfigProvider} from "./DaprAppConfigProvider";
 import {DaprClientProvider} from "./DaprClientProvider";
 import {DaprCommsConfigurationService} from "./DaprCommsConfigurationService";
-
 import configVariables from "./DaprCommsConfigurationVariables";
 import {DaprServerProvider} from "./DaprServerProvider";
 
@@ -21,7 +18,7 @@ import {DaprServerProvider} from "./DaprServerProvider";
         DaprServerProvider,
         DaprAppConfigProvider,
     ],
-    exports: [DaprClient, DaprServer, DaprAppConfig],
+    exports: [DaprClientProvider, DaprServerProvider, DaprAppConfigProvider],
 })
 export class DaprCommsModule {
     constructor() {

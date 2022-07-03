@@ -26,9 +26,7 @@ export type AppVariables = {
 class DaprAppConfig {
     private _secretsCache?: AppVariables;
 
-    constructor(private daprClient: DaprClient) {
-        console.log("initialising dapr app config client");
-    }
+    constructor(private daprClient: DaprClient) {}
 
     public async init() {
         this._secretsCache = (await this.daprClient.secret.get(

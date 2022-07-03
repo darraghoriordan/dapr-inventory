@@ -34,7 +34,7 @@ services:
             - DAPR_SIDECAR_PORT=3500
             - DAPR_API_SECRET="some-secret"
             - OPEN_TELEMETRY_APP_NAME="products-api"
-            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:5411/api/v2/spans
+            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:9411/api/v2/spans
         ports:
             - "5103:80"
             - "50001:50001" # for dapr sidecar comms

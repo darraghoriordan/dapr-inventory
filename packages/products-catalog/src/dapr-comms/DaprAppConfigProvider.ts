@@ -2,10 +2,10 @@ import {DaprClient} from "@dapr/dapr";
 import DaprAppConfig from "./DaprAppConfig";
 
 export const DaprAppConfigProvider = {
-    provide: "DaprAppConfig",
+    provide: DaprAppConfig,
     useFactory: async (daprClient: DaprClient): Promise<DaprAppConfig> => {
         try {
-            console.log("initialising dapr app config client");
+            console.log("dapr app config client factory method");
             const appConfig = new DaprAppConfig(daprClient);
             await appConfig.init();
 
