@@ -1,15 +1,13 @@
 import {Global, Module} from "@nestjs/common";
-import {ConfigModule} from "@nestjs/config";
+import {DaprCommsModule} from "../dapr-comms/dapr-comms.module";
 import CoreLoggerService from "./CoreLoggerService";
-import {LoggingConfigurationService} from "./LoggingConfigurationService";
-import configVariables from "./LoggingConfigurationVariables";
 import {LoggingInterceptor} from "./LoggingInterceptor";
 
 @Global()
 @Module({
-    imports: [ConfigModule.forFeature(configVariables)],
+    imports: [DaprCommsModule],
     providers: [
-        LoggingConfigurationService,
+        //LoggingConfigurationService,
         CoreLoggerService,
         LoggingInterceptor,
     ],

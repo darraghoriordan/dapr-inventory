@@ -6,7 +6,8 @@ services:
         image: datalust/seq:latest
     zipkin:
         image: openzipkin/zipkin-slim
-
+    dapr-placement:
+        image: "daprio/dapr:1.7.2"
     dynamodb-instance:
         image: amazon/dynamodb-local
         command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
@@ -17,8 +18,12 @@ services:
             context: ./packages/products-catalog
         depends_on:
             - dynamodb-instance
+            - zipkin
+            - seq
+
     products-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.7.4"
         network_mode: "service:products-api"
         depends_on:
             - products-api
+            - dapr-placement

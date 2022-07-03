@@ -1,16 +1,28 @@
+import {initTelemetry} from "./core-config/OpenTelemetry";
+// ----- this has to come before imports! -------
+initTelemetry({
+    appName: process.env.OPEN_TELEMETRY_APP_NAME || "",
+    zipkinUrl: process.env.OPEN_TELEMETRY_ZIPKIN_URL || "",
+});
+console.log("initialised telemetry");
+// -------------
+
 import {ClassSerializerInterceptor, ValidationPipe} from "@nestjs/common";
 import {NestFactory, Reflector} from "@nestjs/core";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
-import {CoreConfigurationService} from "./core-config/CoreConfigurationService";
 import CoreLoggerService from "./core-logger/CoreLoggerService";
 import {LoggingInterceptor} from "./core-logger/LoggingInterceptor";
 import {MainModule} from "./main.module";
+import DaprAppConfig from "./dapr-comms/DaprAppConfig";
 
+console.log("running nest app creation");
 void (async () => {
     try {
+        console.log("creating main module...");
         const app = await NestFactory.create(MainModule);
+        console.log("main module created.");
         const loggerService = app.get(CoreLoggerService);
-        const configService = app.get(CoreConfigurationService);
+        const configService = app.get(DaprAppConfig);
         app.useLogger(loggerService);
 
         app.useGlobalPipes(
@@ -29,7 +41,7 @@ void (async () => {
 
         const config = new DocumentBuilder()
             .addBearerAuth()
-            .setTitle(configService.appTitle)
+            .setTitle(configService.appTitle!)
             .setDescription("Describes the backend api")
             .build();
         const document = SwaggerModule.createDocument(app, config);

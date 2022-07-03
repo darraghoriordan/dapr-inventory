@@ -1,10 +1,13 @@
 apiVersion: dapr.io/v1alpha1
 kind: Configuration
 metadata:
-    name: config
+    name: daprConfig
     namespace: daprinventory
 spec:
     tracing:
+        enabled: true
         samplingRate: "1"
+        expandParams: true
+        includeBody: true
         zipkin:
             endpointAddress: "http://zipkin:9411/api/v2/spans"

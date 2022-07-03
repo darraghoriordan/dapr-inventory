@@ -8,16 +8,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {Injectable, LoggerService} from "@nestjs/common";
 import winston from "winston";
-import {LoggingConfigurationService} from "./LoggingConfigurationService";
 import {SeqTransport} from "@datalust/winston-seq";
+import DaprAppConfig from "../dapr-comms/DaprAppConfig";
 
 @Injectable()
 export default class CoreLoggerService implements LoggerService {
     private logger: winston.Logger;
 
-    constructor(private readonly configService: LoggingConfigurationService) {
+    constructor(private readonly daprAppConfig: DaprAppConfig) {
         const seqTransport = new SeqTransport({
-            serverUrl: this.configService.seqUrl,
+            serverUrl: this.daprAppConfig.seqUrl,
             format: winston.format.combine(
                 /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */
                 winston.format.errors({stack: true}),
@@ -31,14 +31,14 @@ export default class CoreLoggerService implements LoggerService {
             },
         });
         this.logger = winston.createLogger({
-            defaultMeta: {["ApplicationName"]: this.configService.loggerName},
-            level: this.configService.shouldLogForDevelopment
+            defaultMeta: {["ApplicationName"]: this.daprAppConfig.loggerName},
+            level: this.daprAppConfig.shouldLogForDevelopment
                 ? "debug"
                 : "info",
             transports: [
                 seqTransport,
                 new winston.transports.Console({
-                    format: this.configService.shouldLogForDevelopment
+                    format: this.daprAppConfig.shouldLogForDevelopment
                         ? winston.format.simple()
                         : winston.format.combine(
                               /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */

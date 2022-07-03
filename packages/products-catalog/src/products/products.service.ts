@@ -1,6 +1,7 @@
 import {DynamoDBClient, ScanCommand} from "@aws-sdk/client-dynamodb";
 import {Inject, Injectable} from "@nestjs/common";
 import ProductDto from "./dtos/product.dto";
+import opentelemetry from "@opentelemetry/api";
 
 @Injectable()
 export class ProductsService {
@@ -8,11 +9,14 @@ export class ProductsService {
         @Inject("DynamoClient")
         private client: DynamoDBClient
     ) {}
+
     async getAllProducts(): Promise<ProductDto[]> {
+        const tracer = opentelemetry.trace.getTracer("basic");
+        const span = tracer.startSpan("getAllProducts");
         const products = await this.client.send(
             new ScanCommand({TableName: "products"})
         );
-
+        span.addEvent("got the data from store");
         const mappedProducts = (products.Items || []).map((i) => {
             return {
                 id: i.id.S,
@@ -20,23 +24,7 @@ export class ProductsService {
                 title: i.title.S,
             } as ProductDto;
         });
+        span.end();
         return mappedProducts;
-        // return [
-        //     {
-        //         id: "product1",
-        //         description: "this is a product1",
-        //         title: "This is a title1",
-        //     },
-        //     {
-        //         id: "product2",
-        //         description: "this is a product2",
-        //         title: "This is a title2",
-        //     },
-        //     {
-        //         id: "product3",
-        //         description: "this is a product3",
-        //         title: "This is a title3",
-        //     },
-        // ];
     }
 }

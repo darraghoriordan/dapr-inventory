@@ -1,0 +1,17 @@
+import {Module} from "@nestjs/common";
+import {ConfigModule} from "@nestjs/config";
+import {LoggerModule} from "../core-logger/logger.module";
+import {DaprCommsModule} from "../dapr-comms/dapr-comms.module";
+//import {CoreConfigurationService} from "./CoreConfigurationService";
+import configVariables from "./CoreConfigurationVariables";
+
+@Module({
+    imports: [
+        LoggerModule,
+        DaprCommsModule,
+        ConfigModule.forFeature(configVariables),
+    ],
+    exports: [CoreConfigurationService],
+    providers: [CoreConfigurationService],
+})
+export class CoreConfigModule {}

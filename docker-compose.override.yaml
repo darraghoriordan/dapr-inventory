@@ -1,5 +1,12 @@
 version: "3.4"
+volumes:
+    di-dynamo-data:
+
 services:
+    redis:
+        image: redis:alpine
+        ports:
+            - "5379:6379"
     seq:
         environment:
             - ACCEPT_EULA=Y
@@ -8,17 +15,29 @@ services:
     zipkin:
         ports:
             - "5411:9411"
-
+    dapr-placement:
+        command: ["./placement", "-port", "50000", "-log-level", "debug"]
+        ports:
+            - "50000:50000"
+    dynamodb-instance:
+        user: root # this fixes WARNING: [sqlite] cannot open DB[41]: com.almworks.sqlite4java.SQLiteException: [14] unable to open database file
+        working_dir: /home/dynamodblocal
+        volumes:
+            - di-dynamo-data:/home/dynamodblocal/data
+        ports:
+            - 5412:8000
     products-api:
         environment:
-            - APP_TITLE=products-catalog
-            - LOGGER_NAME=products-catalog
-            - WEB_PORT=80
-            - SEQ_URL=http://seq
-            - NODE_ENV=dev # would use "production" on production
+            - DAPR_SERVER_HOST=products-api
+            - DAPR_SERVER_PORT=3001
+            - DAPR_SIDECAR_HOST=products-api
+            - DAPR_SIDECAR_PORT=3500
+            - DAPR_API_SECRET="some-secret"
+            - OPEN_TELEMETRY_APP_NAME="products-api"
+            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:5411/api/v2/spans
         ports:
             - "5103:80"
-            - "50001:50001"
+            - "50001:50001" # for dapr sidecar comms
 
     products-api-dapr:
         command:
@@ -28,11 +47,14 @@ services:
                 "products-api",
                 "-app-port",
                 "80",
+                "-placement-host-address",
+                "dapr-placement:50000",
+                "--enable-api-logging",
+                "--log-as-json",
                 "-components-path",
-                "/components",
+                "/dapr-meta/components",
                 "-config",
-                "/configuration/main-config.yaml",
+                "/dapr-meta/configuration/main-config.yaml",
             ]
         volumes:
-            - "./dapr/components/:/components"
-            - "./dapr/configuration/:/configuration"
+            - "./dapr:/dapr-meta"
