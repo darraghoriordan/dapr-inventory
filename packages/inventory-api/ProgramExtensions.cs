@@ -14,7 +14,7 @@ namespace Darragh.DaprInventory.Services.Inventory.API;
 
 public static class ProgramExtensions
 {
-    private const string AppName = "Inventory API";
+    private const string AppName = "inventory-api";
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {

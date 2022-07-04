@@ -1,7 +1,7 @@
 ﻿using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
-var appName = "Inventory API";
+var appName = "inventory-api";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCustomConfiguration();
