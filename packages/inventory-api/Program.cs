@@ -5,11 +5,12 @@ var appName = "Inventory API";
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddCustomConfiguration();
-builder.AddCustomSerilog();
+
 builder.AddCustomSwagger();
 builder.AddCustomDatabase();
 builder.AddCustomOpenTelemetry();
 builder.AddCustomHealthChecks();
+builder.AddCustomSerilog();
 
 builder.Services.AddDaprClient();
 builder.Services.AddControllers();

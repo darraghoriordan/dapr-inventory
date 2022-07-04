@@ -6,6 +6,9 @@ using OpenTelemetry.Trace;
 using Serilog;
 using Dapr;
 using Darragh.DaprInventory.Services.Inventory.API.Healthchecks;
+using Serilog.Enrichers.Span;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
 
 namespace Darragh.DaprInventory.Services.Inventory.API;
 
@@ -15,14 +18,22 @@ public static class ProgramExtensions
 
     public static void AddCustomConfiguration(this WebApplicationBuilder builder)
     {
-
-        var secretDescriptors = new List<DaprSecretDescriptor>{
+        try
+        {
+            builder.Configuration.AddEnvironmentVariables();
+            var secretDescriptors = new List<DaprSecretDescriptor>{
         new DaprSecretDescriptor("inventoryApi",new Dictionary<string, string>(){ { "namespace", "daprinventory" } })};
 
-        builder.Configuration.AddDaprSecretStore(
-       "daprinventory-secretstore",
-        secretDescriptors,
-       new DaprClientBuilder().Build());
+            builder.Configuration.AddDaprSecretStore(
+           "daprinventory-secretstore",
+            secretDescriptors,
+           new DaprClientBuilder().Build());
+        }
+        catch (System.Exception)
+        {
+            //throw;
+        }
+
 
     }
     public static void AddCustomOpenTelemetry(this WebApplicationBuilder builder)
@@ -33,6 +44,7 @@ public static class ProgramExtensions
         {
             tracerProviderBuilder
             .AddZipkinExporter(c => { c.Endpoint = new Uri(url); })
+            .AddConsoleExporter()
             .AddSource(appName)
             .SetResourceBuilder(
                 ResourceBuilder.CreateDefault()
@@ -41,28 +53,6 @@ public static class ProgramExtensions
             .AddAspNetCoreInstrumentation()
             .AddNpgsql();
         });
-
-
-
-
-        //     using var tracerProvider = Sdk.CreateTracerProviderBuilder()
-        //         .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("inventory-api"))
-        //         .SetSampler(new AlwaysOnSampler())
-        //         // This optional activates tracing for your application, if you trace your own activities:
-        //         .AddSource("inventory-api")
-        //         // This activates up Npgsql's tracing:
-        //         .AddNpgsql()
-        //         // This prints tracing data to the console:
-        //         .AddConsoleExporter()
-        //         .Build();
-
-        //     builder
-        //  .AddZipkinExporter(o => o.HttpClientFactory = () =>
-        //  {
-        //      HttpClient client = new HttpClient();
-        //      client.DefaultRequestHeaders.Add("X-MyCustomHeader", "value");
-        //      return client;
-        //  }));
     }
 
     public static void AddCustomHealthChecks(this WebApplicationBuilder builder) =>
@@ -77,7 +67,9 @@ public static class ProgramExtensions
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()
             .WriteTo.Seq(seqServerUrl)
+            .Enrich.FromLogContext()
             .Enrich.WithProperty("ApplicationName", AppName)
+            .Enrich.WithSpan()
             .CreateLogger();
 
         builder.Host.UseSerilog();
