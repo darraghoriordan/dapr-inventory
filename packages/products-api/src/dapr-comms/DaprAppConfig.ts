@@ -31,7 +31,7 @@ class DaprAppConfig {
     public async init() {
         this._secretsCache = (await this.daprClient.secret.get(
             "daprinventory-secretstore",
-            "appSecrets"
+            "productsApi"
         )) as AppVariables;
 
         // validate maybe

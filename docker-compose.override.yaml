@@ -3,8 +3,8 @@ volumes:
     di-dynamo-data:
 
 services:
-    redis:
-        image: redis:alpine
+    redis-state-store:
+        command: redis-server --requirepass redispass
         ports:
             - "5379:6379"
     seq:
@@ -15,15 +15,29 @@ services:
     zipkin:
         ports:
             - "5411:9411"
-    dapr-placement:
+
+    inventory-api-postgres:
+        ports:
+            - 5413:5432
+        volumes:
+            - ./packages/inventory-api/database-initialisation:/docker-entrypoint-initdb.d
+            - ./.docker-compose/.persist/inventory-api-postgres:/var/lib/postgresql/data
+        environment:
+            # these are for the local instance - not secret
+            - POSTGRES_DB=InventoryDb
+            - POSTGRES_SCHEMA_NAME=InventoryApi
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+
+    dapr-actor-placement:
         command: ["./placement", "-port", "50000", "-log-level", "debug"]
         ports:
             - "50000:50000"
-    dynamodb-instance:
+    products-api-dynamodb-instance:
         user: root # this fixes WARNING: [sqlite] cannot open DB[41]: com.almworks.sqlite4java.SQLiteException: [14] unable to open database file
         working_dir: /home/dynamodblocal
         volumes:
-            - di-dynamo-data:/home/dynamodblocal/data
+            - ./.docker-compose/.persist/product-api-dynamo-data:/home/dynamodblocal/data
         ports:
             - 5412:8000
     products-api:
@@ -48,7 +62,41 @@ services:
                 "-app-port",
                 "80",
                 "-placement-host-address",
-                "dapr-placement:50000",
+                "dapr-actor-placement:50000",
+                "--enable-api-logging",
+                "--log-as-json",
+                "-components-path",
+                "/dapr-meta/components",
+                "-config",
+                "/dapr-meta/configuration/main-config.yaml",
+            ]
+        volumes:
+            - "./dapr:/dapr-meta"
+
+    inventory-api:
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=http://0.0.0.0:80
+            - RetryMigrations=true
+            - SeqServerUrl=http://seq
+            - OPEN_TELEMETRY_APP_NAME="inventory-api"
+            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+        ports:
+            - "5104:80"
+            - "50002:50001" # for dapr sidecar comms
+        volumes:
+            - "./packages/inventory-api/Infrastructure/Migrations:/migrations"
+
+    inventory-api-dapr:
+        command:
+            [
+                "./daprd",
+                "-app-id",
+                "inventory-api",
+                "-app-port",
+                "80",
+                "-placement-host-address",
+                "dapr-actor-placement:50000",
                 "--enable-api-logging",
                 "--log-as-json",
                 "-components-path",

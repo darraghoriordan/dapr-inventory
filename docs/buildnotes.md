@@ -16,6 +16,8 @@ pre-populate, only have GET?
 display on a ui for customer
 added docker compose for the products api
 added dapr configurations
+used dapr config to populate settings
+added full tracing to the node app
 
 ## model
 

@@ -4,20 +4,26 @@ services:
     # seq is a log viewing tool
     seq:
         image: datalust/seq:latest
+    redis-state-store:
+        image: redis:alpine
     zipkin:
         image: openzipkin/zipkin-slim
-    dapr-placement:
+    dapr-actor-placement:
         image: "daprio/dapr:1.7.2"
-    dynamodb-instance:
+    products-api-dynamodb-instance:
         image: amazon/dynamodb-local
         command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
+    inventory-api-postgres:
+        image: postgres:14-alpine
+        restart: "no"
 
     products-api:
         image: ${REGISTRY:-daprinventory}/products.api:${TAG:-latest}
         build:
-            context: ./packages/products-catalog
+            context: ./packages/products-api
+        restart: on-failure
         depends_on:
-            - dynamodb-instance
+            - products-api-dynamodb-instance
             - zipkin
             - seq
 
@@ -26,4 +32,21 @@ services:
         network_mode: "service:products-api"
         depends_on:
             - products-api
-            - dapr-placement
+            - dapr-actor-placement
+
+    inventory-api:
+        image: ${REGISTRY:-daprinventory}/inventory.api:${TAG:-latest}
+        restart: on-failure
+        build:
+            context: ./packages/inventory-api
+        depends_on:
+            - inventory-api-postgres
+            - zipkin
+            - seq
+
+    inventory-api-dapr: # dapr sidecar for products
+        image: "daprio/daprd:1.7.4"
+        network_mode: "service:inventory-api"
+        depends_on:
+            - inventory-api
+            - dapr-actor-placement

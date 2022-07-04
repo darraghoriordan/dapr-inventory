@@ -8,11 +8,11 @@ spec:
     version: v1
     metadata:
         - name: redisHost
-          value: redis:6379
+          value: redis-state-store:6379
         - name: redisPassword
           secretKeyRef:
-              name: stateStore.redisPassword
-              key: stateStore.redisPassword
+              name: stateStore
+              key: redisPassword
         - name: actorStateStore
           value: "true"
 auth:
