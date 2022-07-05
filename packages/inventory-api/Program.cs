@@ -4,15 +4,22 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 var appName = "inventory-api";
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddCustomConfiguration();
+builder.Configuration.AddEnvironmentVariables();
 
+builder.AddConfigurationFromDapr();
+
+builder.AddCustomSerilog();
 builder.AddCustomSwagger();
 builder.AddCustomDatabase();
 builder.AddCustomOpenTelemetry();
 builder.AddCustomHealthChecks();
-builder.AddCustomSerilog();
 
-builder.Services.AddDaprClient();
+builder.Services.AddDaprClient(c =>
+{
+    var hostname = builder.Configuration["DAPR_SIDECAR_HOST"];
+    var port = builder.Configuration["DAPR_SIDECAR_PORT"];
+    c.UseHttpEndpoint($"http://{hostname}:{port}");
+});
 builder.Services.AddControllers();
 
 var app = builder.Build();

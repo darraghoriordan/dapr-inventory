@@ -12,11 +12,14 @@ export class ProductsService {
 
     async getAllProducts(): Promise<ProductDto[]> {
         const tracer = opentelemetry.trace.getTracer("basic");
-        const span = tracer.startSpan("getAllProducts");
+        const span = tracer.startSpan("getAllProductsManual");
         const products = await this.client.send(
             new ScanCommand({TableName: "products"})
         );
-        span.addEvent("got the data from store");
+        span.setAttribute("thisAttribute", "this is a value set manually");
+        span.addEvent("got the data from store", {
+            ["manualEventAttribute"]: "this is a value",
+        });
         const mappedProducts = (products.Items || []).map((i) => {
             return {
                 id: i.id.S,

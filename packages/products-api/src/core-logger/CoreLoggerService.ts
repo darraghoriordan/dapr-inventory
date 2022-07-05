@@ -30,23 +30,22 @@ export default class CoreLoggerService implements LoggerService {
                 console.error(e);
             },
         });
+        const consoleTransportInstance = new winston.transports.Console({
+            format: this.daprAppConfig.shouldLogForDevelopment
+                ? winston.format.simple()
+                : winston.format.combine(
+                      /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */
+                      winston.format.errors({stack: true}),
+                      winston.format.json()
+                  ),
+        });
+
         this.logger = winston.createLogger({
             defaultMeta: {["ApplicationName"]: this.daprAppConfig.loggerName},
             level: this.daprAppConfig.shouldLogForDevelopment
                 ? "debug"
                 : "info",
-            transports: [
-                seqTransport,
-                new winston.transports.Console({
-                    format: this.daprAppConfig.shouldLogForDevelopment
-                        ? winston.format.simple()
-                        : winston.format.combine(
-                              /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */
-                              winston.format.errors({stack: true}),
-                              winston.format.json()
-                          ),
-                }),
-            ],
+            transports: [seqTransport, consoleTransportInstance],
         });
     }
 

@@ -5,11 +5,14 @@
 public class InventoryItemController : ControllerBase
 {
     private readonly InventoryDbContext _context;
-
-    public InventoryItemController(InventoryDbContext context)
+    private readonly ILogger<InventoryItemController> _logger;
+    private readonly DaprClient _daprClient;
+    public InventoryItemController(InventoryDbContext context, ILogger<InventoryItemController> logger, DaprClient daprClient)
     {
         _context = context;
         _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        _logger = logger;
+        _daprClient = daprClient;
     }
 
     [HttpGet("items/by_productId")]
@@ -17,6 +20,8 @@ public class InventoryItemController : ControllerBase
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<List<InventoryItem>>> ItemsByProductIdAsync([FromQuery] string productId)
     {
+        _logger.LogInformation("getting product {productId}", productId);
+
         if (!string.IsNullOrEmpty(productId))
         {
             var items = await _context.InventoryItems
@@ -34,7 +39,17 @@ public class InventoryItemController : ControllerBase
 
         return BadRequest("Id value is invalid.");
     }
+    [HttpGet("items/hello")]
+    [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<ActionResult<List<InventoryItem>>> ItemsHelloAsync()
+    {
+        _logger.LogInformation("getting hello");
 
+        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products");
+
+        return Ok("Result: " + result);
+    }
 
     [HttpGet("items/by_locationId")]
     [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]

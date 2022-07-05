@@ -16,11 +16,10 @@ public static class ProgramExtensions
 {
     private const string AppName = "inventory-api";
 
-    public static void AddCustomConfiguration(this WebApplicationBuilder builder)
+    public static void AddConfigurationFromDapr(this WebApplicationBuilder builder)
     {
         try
         {
-            builder.Configuration.AddEnvironmentVariables();
             var secretDescriptors = new List<DaprSecretDescriptor>{
         new DaprSecretDescriptor("inventoryApi",new Dictionary<string, string>(){ { "namespace", "daprinventory" } })};
 
@@ -29,12 +28,11 @@ public static class ProgramExtensions
             secretDescriptors,
            new DaprClientBuilder().Build());
         }
-        catch (System.Exception)
+        catch (System.Exception error)
         {
-            //throw;
+            Log.Logger.Error("Couldn't get settings from dapr sidecar", error);
+            throw;
         }
-
-
     }
     public static void AddCustomOpenTelemetry(this WebApplicationBuilder builder)
     {
@@ -61,12 +59,13 @@ public static class ProgramExtensions
         .AddCheck<DaprHealthCheck>("dapr");
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["SeqServerUrl"];
+        var seqServerUrl = builder.Configuration["seqUrl"];
 
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()
             .WriteTo.Seq(seqServerUrl)
+            .Enrich.WithDemystifiedStackTraces()
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ApplicationName", AppName)
             .Enrich.WithSpan()

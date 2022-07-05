@@ -10,6 +10,11 @@ services:
         image: openzipkin/zipkin-slim
     dapr-actor-placement:
         image: "daprio/dapr:1.7.2"
+        depends_on:
+            - seq
+            - zipkin
+            - redis-state-store
+
     products-api-dynamodb-instance:
         image: amazon/dynamodb-local
         command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
@@ -29,7 +34,7 @@ services:
 
     products-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.7.4"
-        network_mode: "service:products-api"
+        network_mode: "service:products-api" # this means it won't get it's own hostname and you can use the main service hostname like you would on k8s or whatever
         depends_on:
             - products-api
             - dapr-actor-placement

@@ -14,6 +14,7 @@ import CoreLoggerService from "./core-logger/CoreLoggerService";
 import {LoggingInterceptor} from "./core-logger/LoggingInterceptor";
 import {MainModule} from "./main.module";
 import DaprAppConfig from "./dapr-comms/DaprAppConfig";
+import * as bodyParser from "body-parser";
 
 console.log("running nest app creation");
 void (async () => {
@@ -21,6 +22,11 @@ void (async () => {
         console.log("creating main module...");
         const app = await NestFactory.create(MainModule);
         console.log("main module created.");
+
+        // this is added here to process Dapr.IO publish with content-header: appliction/cloudevents+json. If not included body of post request will be {}
+        app.use(bodyParser.json({type: "application/cloudevents+json"}));
+        // add this as other post with content-type: json will fail like login will fail due to bodyPaser code above
+        app.use(bodyParser.json());
         const loggerService = app.get(CoreLoggerService);
         const configService = app.get(DaprAppConfig);
         app.useLogger(loggerService);

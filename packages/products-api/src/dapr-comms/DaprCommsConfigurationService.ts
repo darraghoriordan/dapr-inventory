@@ -15,16 +15,7 @@ export class DaprCommsConfigurationService extends ValidatedConfigurationService
     get daprApiSecret(): string {
         return this.configService.get<string>("daprcomms.daprApiSecret")!;
     }
-    @IsDefined()
-    @IsString()
-    get daprServerHost(): string {
-        return this.configService.get<string>("daprcomms.daprServerHost")!;
-    }
-    @IsDefined()
-    @IsString()
-    get daprServerPort(): string {
-        return this.configService.get<string>("daprcomms.daprServerPort")!;
-    }
+
     @IsDefined()
     @IsString()
     get daprSidecarHost(): string {
