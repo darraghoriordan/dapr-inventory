@@ -1,0 +1,29 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+    name: products-api-dynamo
+    namespace: daprinventory
+spec:
+    type: state.aws.dynamodb
+    version: v1
+    metadata:
+        - name: table
+          value: "products"
+        - name: region
+          secretKeyRef:
+              name: productsApi
+              key: awsDefaultRegion
+        - name: accessKey
+          secretKeyRef:
+              name: productsApi
+              key: awsAccessKeyId
+        - name: secretKey
+          secretKeyRef:
+              name: productsApi
+              key: awsSecretAccessKey
+        - name: endpoint
+          secretKeyRef:
+              name: productsApi
+              key: dynamoUrl
+auth:
+    secretStore: daprinventory-secretstore

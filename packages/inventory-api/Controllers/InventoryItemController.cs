@@ -51,6 +51,18 @@ public class InventoryItemController : ControllerBase
         return Ok("Result: " + result);
     }
 
+    [HttpGet("items/hellodaprstate")]
+    [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<ActionResult<List<InventoryItem>>> ItemsHelloDaprStateAsync()
+    {
+        _logger.LogInformation("getting hello with dapr state");
+
+        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/withDapr");
+
+        return Ok("Result: " + result);
+    }
+
     [HttpGet("items/by_locationId")]
     [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

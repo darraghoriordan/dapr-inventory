@@ -4,7 +4,7 @@ import {MinLength} from "class-validator";
 class ProductDto {
     @MinLength(1)
     @ApiProperty()
-    id!: string;
+    key!: string;
 
     @MinLength(1)
     @ApiProperty()

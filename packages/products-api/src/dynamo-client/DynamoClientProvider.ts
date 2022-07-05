@@ -28,9 +28,9 @@ const createTables = async (
             await client.send(
                 new CreateTableCommand({
                     TableName: "products",
-                    KeySchema: [{AttributeName: "id", KeyType: "HASH"}],
+                    KeySchema: [{AttributeName: "key", KeyType: "HASH"}],
                     AttributeDefinitions: [
-                        {AttributeName: "id", AttributeType: "S"},
+                        {AttributeName: "key", AttributeType: "S"},
                     ],
                     ProvisionedThroughput: {
                         ReadCapacityUnits: 1,
@@ -43,7 +43,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        id: {S: "product1"},
+                        key: {S: "product1"},
                         description: {S: "this is a product1"},
                         title: {S: "This is a title1"},
                     },
@@ -53,7 +53,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        id: {S: "product2"},
+                        key: {S: "product2"},
                         description: {S: "this is a product2"},
                         title: {S: "This is a title2"},
                     },
@@ -63,7 +63,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        id: {S: "product3"},
+                        key: {S: "product3"},
                         description: {S: "this is a product3"},
                         title: {S: "This is a title3"},
                     },
