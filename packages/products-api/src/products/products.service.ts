@@ -39,11 +39,29 @@ export class ProductsService {
 
         this.logger.log("product response with dapr", result);
 
-        return result.map((kv) => {
-            return kv.value;
-        }) as any as ProductDto[];
-    }
+        return result as any;
+        // const mapped = result.map((kv) => {
+        //     return kv.value;
+        // });
 
+        // return mapped as any as ProductDto[];
+    }
+    async getOneProductGet(id: string): Promise<ProductDto> {
+        const product1 = await this.client.send(
+            new GetItemCommand({
+                TableName: "products",
+                Key: {key: {S: id}},
+            })
+        );
+
+        this.logger.log("getOneProductGet", {product1});
+
+        return {
+            key: product1.Item?.key.S,
+            description: product1.Item?.description.S,
+            title: product1.Item?.title.S,
+        } as ProductDto;
+    }
     async getAllProductsGet(): Promise<ProductDto[]> {
         const product1 = await this.client.send(
             new GetItemCommand({

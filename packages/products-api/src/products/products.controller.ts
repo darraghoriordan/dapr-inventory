@@ -1,4 +1,4 @@
-import {Controller, Get, Post} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post} from "@nestjs/common";
 import {ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import ProductDto from "./dtos/product.dto";
 import {ProductsService} from "./products.service";
@@ -15,6 +15,12 @@ export class ProductsController {
     }
 
     @ApiOkResponse({isArray: true, type: ProductDto})
+    @Get(":id")
+    getOneProduct(@Param("id") id: string): Promise<ProductDto> {
+        return this.productService.getOneProductGet(id);
+    }
+
+    @ApiOkResponse({isArray: true, type: ProductDto})
     @Get("awsScan")
     getAllProductsScan(): Promise<ProductDto[]> {
         return this.productService.getAllProductsScan();
@@ -28,7 +34,7 @@ export class ProductsController {
 
     @ApiOkResponse({isArray: true, type: ProductDto})
     @Post("withDapr")
-    addProductsDapr(): Promise<ProductDto[]> {
-        return this.productService.getAllProductsViaDapr();
+    addProductsDapr(@Body() model: ProductDto): Promise<ProductDto> {
+        return this.productService.addProductViaDapr(model);
     }
 }
