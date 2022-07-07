@@ -35,7 +35,7 @@ services:
         ports:
             - "50000:50000"
 
-    products-api-dynamodb-instance:
+    products-api-datastore-instance:
         user: root # this fixes WARNING: [sqlite] cannot open DB[41]: com.almworks.sqlite4java.SQLiteException: [14] unable to open database file
         working_dir: /home/dynamodblocal
         volumes:

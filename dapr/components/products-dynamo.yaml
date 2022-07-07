@@ -1,7 +1,7 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-    name: products-api-dynamo
+    name: products-api-datastore
     namespace: daprinventory
 spec:
     type: state.aws.dynamodb

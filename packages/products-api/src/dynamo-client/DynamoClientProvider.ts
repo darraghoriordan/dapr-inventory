@@ -44,8 +44,12 @@ const createTables = async (
                     TableName: "products",
                     Item: {
                         key: {S: "product1"},
-                        description: {S: "this is a product1"},
-                        title: {S: "This is a title1"},
+                        value: {
+                            S: JSON.stringify({
+                                description: "this is a product1",
+                                title: "this is a title1",
+                            }),
+                        },
                     },
                 })
             );
@@ -54,8 +58,12 @@ const createTables = async (
                     TableName: "products",
                     Item: {
                         key: {S: "product2"},
-                        description: {S: "this is a product2"},
-                        title: {S: "This is a title2"},
+                        value: {
+                            S: JSON.stringify({
+                                description: "this is a product2",
+                                title: "this is a title2",
+                            }),
+                        },
                     },
                 })
             );
@@ -64,8 +72,12 @@ const createTables = async (
                     TableName: "products",
                     Item: {
                         key: {S: "product3"},
-                        description: {S: "this is a product3"},
-                        title: {S: "This is a title3"},
+                        value: {
+                            S: JSON.stringify({
+                                description: "this is a product3",
+                                title: "this is a title3",
+                            }),
+                        },
                     },
                 })
             );

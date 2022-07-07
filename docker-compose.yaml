@@ -15,7 +15,7 @@ services:
             - zipkin
             - redis-state-store
 
-    products-api-dynamodb-instance:
+    products-api-datastore-instance:
         image: amazon/dynamodb-local
         command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data/"
     inventory-api-postgres:
@@ -28,7 +28,7 @@ services:
             context: ./packages/products-api
         restart: on-failure
         depends_on:
-            - products-api-dynamodb-instance
+            - products-api-datastore-instance
             - zipkin
             - seq
 
