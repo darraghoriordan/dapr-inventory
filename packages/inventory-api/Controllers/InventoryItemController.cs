@@ -39,14 +39,14 @@ public class InventoryItemController : ControllerBase
 
         return BadRequest("Id value is invalid.");
     }
-    [HttpGet("items/hello")]
+    [HttpGet("items/helloawssdk")]
     [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult<List<InventoryItem>>> ItemsHelloAsync()
     {
         _logger.LogInformation("getting hello");
 
-        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products");
+        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/awssdk");
 
         return Ok("Result: " + result);
     }
@@ -58,7 +58,7 @@ public class InventoryItemController : ControllerBase
     {
         _logger.LogInformation("getting hello with dapr state");
 
-        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/withDapr");
+        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/dapr");
 
         return Ok("Result: " + result);
     }
