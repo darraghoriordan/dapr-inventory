@@ -19,7 +19,7 @@ export class ProductsAwsSdkService {
 
     async addProduct(model: ProductDto): Promise<ProductDto> {
         const putItemCommand = new PutItemCommand({
-            TableName: "products-api-datastore",
+            TableName: "products",
             Item: {
                 key: {S: model.key},
                 value: {
@@ -46,11 +46,12 @@ export class ProductsAwsSdkService {
         );
 
         this.logger.log("getOneProductGet", {product1});
+        const mappedValue = JSON.parse(product1.Item?.value.S || "{}");
 
         return {
             key: product1.Item?.key.S,
-            description: product1.Item?.description.S,
-            title: product1.Item?.title.S,
+            description: mappedValue.description,
+            title: mappedValue.title,
         } as ProductDto;
     }
 

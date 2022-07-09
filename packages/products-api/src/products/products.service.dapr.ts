@@ -46,21 +46,27 @@ export class ProductsDaprService {
         } as ProductDto;
     }
     async getAllProducts(): Promise<ProductDto[]> {
-        const result = await this.daprClient.state.getBulk(
-            "products-api-datastore",
-            ["product1", "product2", "product3"]
-        );
+        try {
+            const result = await this.daprClient.state.getBulk(
+                "products-api-datastore",
+                ["product1", "product2", "product3"]
+            );
 
-        this.logger.log("product all response with dapr", result);
+            this.logger.log("product all response with dapr", result);
 
-        const mapped = result.map((kv) => {
-            return {
-                key: kv.key,
-                description: kv.description,
-                title: kv.title,
-            } as ProductDto;
-        });
+            const mapped = result.map((kv) => {
+                return {
+                    key: kv.key,
+                    description: kv.description,
+                    title: kv.title,
+                } as ProductDto;
+            });
 
-        return mapped as any as ProductDto[];
+            return mapped as any as ProductDto[];
+        } catch (error) {
+            this.logger.error("failed to get bulk from state provider", error);
+        }
+
+        return [];
     }
 }
