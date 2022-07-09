@@ -4,24 +4,24 @@ import ProductDto from "./dtos/product.dto";
 import {ProductsAwsSdkService} from "./products.service.awssdk";
 
 @ApiTags("Products")
-@Controller("products")
+@Controller("products/awssdk")
 export class ProductsAwsSdkController {
     constructor(private readonly productService: ProductsAwsSdkService) {}
 
     @ApiOkResponse({type: ProductDto})
-    @Get("awssdk/:id")
+    @Get(":id")
     getOne(@Param("id") id: string): Promise<ProductDto> {
         return this.productService.getOneProduct(id);
     }
 
     @ApiOkResponse({isArray: true, type: ProductDto})
-    @Get("awssdk")
+    @Get()
     getAll(): Promise<ProductDto[]> {
         return this.productService.getAllProductsScan();
     }
 
     @ApiOkResponse({type: ProductDto})
-    @Post("awssdk")
+    @Post()
     add(@Body() model: ProductDto): Promise<ProductDto> {
         return this.productService.addProduct(model);
     }

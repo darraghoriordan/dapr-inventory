@@ -1,4 +1,12 @@
-create simple architecture
+WHY
+
+You should be able to run all the services at one time to ensure the system works as expected when integrated locally with fast developer feedback. The speed of feedback is key here.
+
+Note that This is no replacement for running your services on the production hardware because you want to avoid building microservices that only interact with localhost. This is not close at all to reality because localhost is extremely fast.
+
+You don't want api's calling other apis if you can help it. It's much better to use queues or events.
+
+# create simple architecture
 
 Products - add a product / pre populate () - use dynamo normal consistency? maybe with redis
 POs - create a po, change po state - use postgres?
