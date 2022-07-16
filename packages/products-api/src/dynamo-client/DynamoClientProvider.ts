@@ -43,7 +43,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        key: {S: "product1"},
+                        key: {S: "products-api||product1"},
                         value: {
                             S: JSON.stringify({
                                 description: "this is a product1",
@@ -57,7 +57,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        key: {S: "product2"},
+                        key: {S: "products-api||product2"},
                         value: {
                             S: JSON.stringify({
                                 description: "this is a product2",
@@ -71,7 +71,7 @@ const createTables = async (
                 new PutItemCommand({
                     TableName: "products",
                     Item: {
-                        key: {S: "product3"},
+                        key: {S: "products-api||product3"},
                         value: {
                             S: JSON.stringify({
                                 description: "this is a product3",

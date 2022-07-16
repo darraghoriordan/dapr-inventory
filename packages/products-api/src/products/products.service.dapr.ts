@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@nestjs/common";
+import {Injectable} from "@nestjs/common";
 import ProductDto from "./dtos/product.dto";
 import {DaprClient} from "@dapr/dapr";
 import CoreLoggerService from "../core-logger/CoreLoggerService";
@@ -7,7 +7,6 @@ import {KeyValueType} from "@dapr/dapr/types/KeyValue.type";
 @Injectable()
 export class ProductsDaprService {
     constructor(
-        @Inject("DynamoClient")
         private daprClient: DaprClient,
         private logger: CoreLoggerService
     ) {}
@@ -57,8 +56,8 @@ export class ProductsDaprService {
             const mapped = result.map((kv) => {
                 return {
                     key: kv.key,
-                    description: kv.description,
-                    title: kv.title,
+                    description: kv.data.description, // this "data" thing is a bit weird
+                    title: kv.data.title,
                 } as ProductDto;
             });
 
