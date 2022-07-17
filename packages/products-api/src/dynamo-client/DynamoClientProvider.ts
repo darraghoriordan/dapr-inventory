@@ -9,7 +9,28 @@ import {
 
 import CoreLoggerService from "../core-logger/CoreLoggerService";
 import DaprAppConfig from "../dapr-comms/DaprAppConfig";
+import ProductDto from "../products/dtos/product.dto";
 
+const seedItems: ProductDto[] = [
+    {
+        key: "products-api||product1",
+        description: "this is a product1",
+        title: "this is a title1",
+        availableStock: 0,
+    },
+    {
+        key: "products-api||product2",
+        description: "this is a product2",
+        title: "this is a title2",
+        availableStock: 0,
+    },
+    {
+        key: "products-api||product3",
+        description: "this is a product3",
+        title: "this is a title3",
+        availableStock: 0,
+    },
+];
 const createTables = async (
     client: DynamoDBClient,
     logger: CoreLoggerService
@@ -39,50 +60,27 @@ const createTables = async (
                 })
             );
             logger.debug("inserting seed data");
-            const p1Promise = client.send(
-                new PutItemCommand({
-                    TableName: "products",
-                    Item: {
-                        key: {S: "products-api||product1"},
-                        value: {
-                            S: JSON.stringify({
-                                description: "this is a product1",
-                                title: "this is a title1",
-                            }),
-                        },
-                    },
-                })
-            );
-            const p2Promise = client.send(
-                new PutItemCommand({
-                    TableName: "products",
-                    Item: {
-                        key: {S: "products-api||product2"},
-                        value: {
-                            S: JSON.stringify({
-                                description: "this is a product2",
-                                title: "this is a title2",
-                            }),
-                        },
-                    },
-                })
-            );
-            const p3Promise = client.send(
-                new PutItemCommand({
-                    TableName: "products",
-                    Item: {
-                        key: {S: "products-api||product3"},
-                        value: {
-                            S: JSON.stringify({
-                                description: "this is a product3",
-                                title: "this is a title3",
-                            }),
-                        },
-                    },
-                })
-            );
 
-            await Promise.allSettled([p1Promise, p2Promise, p3Promise]);
+            const promises = seedItems.map((x) => {
+                const {description, title, availableStock} = x;
+                return client.send(
+                    new PutItemCommand({
+                        TableName: "products",
+                        Item: {
+                            key: {S: x.key},
+                            value: {
+                                S: JSON.stringify({
+                                    description: description,
+                                    title: title,
+                                    availableStock: availableStock,
+                                }),
+                            },
+                        },
+                    })
+                );
+            });
+
+            await Promise.allSettled(promises);
         } else {
             logger.log("dynamo tables already exist, skipping.");
         }

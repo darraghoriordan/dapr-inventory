@@ -18,6 +18,13 @@ public class InventoryItem
         AvailableStock = availableStock;
     }
 
+    public int SetStock(int quantity)
+    {
+        AvailableStock = quantity;
+
+        return AvailableStock;
+    }
+
     public int AdjustStock(int quantity)
     {
         AvailableStock += quantity;

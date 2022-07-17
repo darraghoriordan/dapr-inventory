@@ -1,4 +1,5 @@
 import {
+    AttributeValue,
     DynamoDBClient,
     GetItemCommand,
     PutItemCommand,
@@ -26,6 +27,7 @@ export class ProductsAwsSdkService {
                     S: JSON.stringify({
                         title: model.title,
                         description: model.description,
+                        availableStock: model.availableStock,
                     }),
                 },
             },
@@ -38,21 +40,16 @@ export class ProductsAwsSdkService {
     }
 
     async getOneProduct(id: string): Promise<ProductDto> {
-        const product1 = await this.client.send(
+        const getItemResult = await this.client.send(
             new GetItemCommand({
                 TableName: "products",
                 Key: {key: {S: id}},
             })
         );
 
-        this.logger.log("getOneProductGet", {product1});
-        const mappedValue = JSON.parse(product1.Item?.value.S || "{}");
+        this.logger.log("AWSSdk: getOneProduct Get", {getItemResult});
 
-        return {
-            key: product1.Item?.key.S,
-            description: mappedValue.description,
-            title: mappedValue.title,
-        } as ProductDto;
+        return this.mapOne(getItemResult.Item || {});
     }
 
     async getAllProductsScan(): Promise<ProductDto[]> {
@@ -66,14 +63,19 @@ export class ProductsAwsSdkService {
             ["manualEventAttribute"]: "this is a value",
         });
         const mappedProducts = (products.Items || []).map((i) => {
-            const modelProps = JSON.parse(i.value.S || "{}");
-            return {
-                key: i.key.S,
-                description: modelProps.description,
-                title: modelProps.title,
-            } as ProductDto;
+            return this.mapOne(i);
         });
         span.end();
         return mappedProducts;
+    }
+
+    private mapOne(i: Record<string, AttributeValue>) {
+        const modelProps = JSON.parse(i.value.S || "{}");
+        return {
+            key: i.key.S,
+            description: modelProps.description,
+            title: modelProps.title,
+            availableStock: modelProps.availableStock || 0,
+        } as ProductDto;
     }
 }

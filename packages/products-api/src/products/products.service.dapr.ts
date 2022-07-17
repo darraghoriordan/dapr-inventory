@@ -20,6 +20,7 @@ export class ProductsDaprService {
                     value: {
                         title: model.title,
                         description: model.description,
+                        availableStock: model.availableStock,
                     },
                 },
             ]
@@ -38,11 +39,7 @@ export class ProductsDaprService {
 
         this.logger.log("getOneProductGet", {result});
 
-        return {
-            key: id,
-            description: result.description,
-            title: result.title,
-        } as ProductDto;
+        return result as ProductDto;
     }
     async getAllProducts(): Promise<ProductDto[]> {
         try {
@@ -54,18 +51,23 @@ export class ProductsDaprService {
             this.logger.log("product all response with dapr", result);
 
             const mapped = result.map((kv) => {
-                return {
-                    key: kv.key,
-                    description: kv.data.description, // this "data" thing is a bit weird
-                    title: kv.data.title,
-                } as ProductDto;
+                return this.mapOne(kv);
             });
 
-            return mapped as any as ProductDto[];
+            return mapped;
         } catch (error) {
             this.logger.error("failed to get bulk from state provider", error);
         }
 
         return [];
+    }
+
+    private mapOne(kv: KeyValueType): ProductDto {
+        return {
+            key: kv.key,
+            description: kv.data.description,
+            title: kv.data.title,
+            availableStock: kv.data.availableStock || 0,
+        } as ProductDto;
     }
 }

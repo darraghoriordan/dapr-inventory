@@ -1,5 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {MinLength} from "class-validator";
+import {IsInt, MinLength} from "class-validator";
 
 class ProductDto {
     @MinLength(1)
@@ -13,6 +13,10 @@ class ProductDto {
     @ApiProperty()
     @MinLength(1)
     title!: string;
+
+    @ApiProperty()
+    @IsInt()
+    availableStock!: number;
 }
 
 export default ProductDto;

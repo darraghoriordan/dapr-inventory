@@ -15,10 +15,10 @@ public class InventoryItemController : ControllerBase
         _daprClient = daprClient;
     }
 
-    [HttpGet("items/by_productId")]
+    [HttpGet("product/{productId}")]
     [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<List<InventoryItem>>> ItemsByProductIdAsync([FromQuery] string productId)
+    public async Task<ActionResult<List<InventoryItem>>> ItemsByProductIdAsync(string productId)
     {
         _logger.LogInformation("getting product {productId}", productId);
 
@@ -39,34 +39,66 @@ public class InventoryItemController : ControllerBase
 
         return BadRequest("Id value is invalid.");
     }
-    [HttpGet("items/helloawssdk")]
-    [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
+
+    [Route("location/{locationId}/{productId}/{stockAmount}")]
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<List<InventoryItem>>> ItemsHelloAsync()
+    public async Task<IActionResult> UpdateStockAsync(string locationId, string productId, int stockAmount)
     {
-        _logger.LogInformation("getting hello");
+        // should have failure handling
+        var result = await _context.InventoryItems.Where(ci => ci.LocationId.Equals(locationId)
 
-        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/awssdk");
+        && ci.ProductId.Equals(productId)).FirstOrDefaultAsync();
 
-        return Ok("Result: " + result);
+        if (result == null)
+        {
+            return NotFound("Location/product not found");
+        }
+
+        this._logger.LogInformation("Existing amount", result);
+
+        result.SetStock(stockAmount);
+        _context.Update(result);
+
+        this._logger.LogInformation("New amount", result);
+
+        _context.ChangeTracker.DetectChanges();
+        this._logger.LogInformation("Logging changes detected in context", _context.ChangeTracker.DebugView.LongView);
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 
-    [HttpGet("items/hellodaprstate")]
-    [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
+
+    [Route("location")]
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<List<InventoryItem>>> ItemsHelloDaprStateAsync()
+    public async Task<IActionResult> CreateLocationAsync([FromBody] AddInventoryItemDto item)
     {
-        _logger.LogInformation("getting hello with dapr state");
+        // should have failure handling
+        // should it check that the product exists!!??
+        var result = await _context.InventoryItems.Where(
+            ci => ci.LocationId.Equals(item.LocationId)
+            && ci.ProductId.Equals(item.ProductId))
+            .FirstOrDefaultAsync();
+        if (result != null)
+        {
+            return BadRequest("Location id already exists");
+        }
 
-        var result = await _daprClient.InvokeMethodAsync<dynamic>(HttpMethod.Get, "products-api", "products/dapr");
+        _context.InventoryItems.Add(new InventoryItem(0, item.ProductId, item.LocationId, item.AvailableStock));
+        await _context.SaveChangesAsync();
 
-        return Ok("Result: " + result);
+        return Ok();
     }
 
-    [HttpGet("items/by_locationId")]
+    [HttpGet("location/{locationId}")]
     [ProducesResponseType(typeof(List<InventoryItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult<List<InventoryItem>>> ItemsByLocationIdAsync([FromQuery] string locationId)
+    public async Task<ActionResult<List<InventoryItem>>> ItemsByLocationIdAsync(string locationId)
     {
         if (!string.IsNullOrEmpty(locationId))
         {
@@ -85,5 +117,4 @@ public class InventoryItemController : ControllerBase
 
         return BadRequest("Id value is invalid.");
     }
-
 }
