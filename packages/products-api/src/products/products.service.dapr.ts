@@ -35,12 +35,30 @@ export class ProductsDaprService {
         const result = (await this.daprClient.state.get(
             "products-api-datastore",
             id
-        )) as KeyValueType;
+        )) as ProductDto;
+
+        result.key = id;
 
         this.logger.log("getOneProductGet", {result});
 
         return result as ProductDto;
     }
+
+    async updateStock(id: string, availableStock: number): Promise<void> {
+        const result = (await this.daprClient.state.get(
+            "products-api-datastore",
+            id
+        )) as any as ProductDto;
+
+        result.key = id;
+        result.availableStock = availableStock;
+        this.logger.log("updating stock", result);
+
+        const saveResult = await this.addProduct(result);
+
+        this.logger.log("saved with updated stock", {saveResult});
+    }
+
     async getAllProducts(): Promise<ProductDto[]> {
         try {
             const result = await this.daprClient.state.getBulk(

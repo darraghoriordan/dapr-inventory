@@ -17,7 +17,7 @@ services:
         image: localstack/localstack
 
     dapr-actor-placement:
-        image: "daprio/dapr:1.7.2"
+        image: "daprio/dapr:1.8.0"
         depends_on:
             - seq
             - zipkin
@@ -41,7 +41,7 @@ services:
             - seq
 
     products-api-dapr: # dapr sidecar for products
-        image: "daprio/daprd:1.7.4"
+        image: "daprio/daprd:1.8.0"
         network_mode: "service:products-api" # this means it won't get it's own hostname and you can use the main service hostname like you would on k8s or whatever
         depends_on:
             - products-api
@@ -58,7 +58,7 @@ services:
             - seq
 
     inventory-api-dapr: # dapr sidecar for products
-        image: "daprio/daprd:1.7.4"
+        image: "daprio/daprd:1.8.0"
         network_mode: "service:inventory-api"
         depends_on:
             - inventory-api

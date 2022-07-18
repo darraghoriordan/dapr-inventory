@@ -30,8 +30,8 @@ public class InventoryItemController : ControllerBase
                 .Where(ci => ci.ProductId.Equals(productId))
                 .Select(item => new ItemViewModel(
                     item.Id,
-                    item.ProductId,
                     item.LocationId,
+                     item.ProductId,
                     item.AvailableStock))
                 .ToListAsync();
 
@@ -114,7 +114,9 @@ public class InventoryItemController : ControllerBase
 .Where(ci => ci.ProductId.Equals(productId))
 .SumAsync(x => x.AvailableStock);
 
-        var queues = new List<string>() { "daprinventory-pubsub-sqs", "daprinventory-pubsub-rmq" };
+        var queues = new List<string>() {
+           //  "daprinventory-pubsub-sqs",
+         "daprinventory-pubsub-rmq" };
         var tasks = queues.Select(x => this._daprClient.PublishEventAsync<AvailableStockEventData>(
              x, "etl.inventory.availableProductInventory",
              new AvailableStockEventData(productId, newTotal)));
@@ -136,8 +138,8 @@ public class InventoryItemController : ControllerBase
                 .Where(ci => ci.LocationId.Equals(locationId))
                 .Select(item => new ItemViewModel(
                     item.Id,
-                    item.ProductId,
-                    item.LocationId,
+                   item.LocationId,
+                     item.ProductId,
                     item.AvailableStock))
                 .ToListAsync();
 
