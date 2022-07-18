@@ -8,8 +8,6 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Darragh.DaprInventory.Services.Inventory.API;
 global using Darragh.DaprInventory.Services.Inventory.API.Infrastructure;
 global using Darragh.DaprInventory.Services.Inventory.API.Infrastructure.EntityConfigurations;
-global using Darragh.DaprInventory.Services.Inventory.API.Model;
-global using Darragh.DaprInventory.Services.Inventory.API.ViewModel;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;

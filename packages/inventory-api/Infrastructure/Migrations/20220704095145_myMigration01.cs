@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Darragh.DaprInventory.Services.Inventory.API.Migrations
+namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure.Migrations
 {
     public partial class myMigration01 : Migration
     {

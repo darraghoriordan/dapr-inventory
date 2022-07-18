@@ -7,7 +7,6 @@ using Serilog;
 using Dapr;
 using Darragh.DaprInventory.Services.Inventory.API.Healthchecks;
 using Serilog.Enrichers.Span;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 
 namespace Darragh.DaprInventory.Services.Inventory.API;

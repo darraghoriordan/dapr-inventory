@@ -1,4 +1,4 @@
-﻿namespace Darragh.DaprInventory.Services.Inventory.API.Model;
+﻿namespace Darragh.DaprInventory.Services.Inventory.API.InventoryItems;
 
 public class InventoryItem
 {

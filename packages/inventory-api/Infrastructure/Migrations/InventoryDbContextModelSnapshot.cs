@@ -2,19 +2,17 @@
 using Darragh.DaprInventory.Services.Inventory.API.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Darragh.DaprInventory.Services.Inventory.API.Migrations
+namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20220704095145_myMigration01")]
-    partial class myMigration01
+    partial class InventoryDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,7 +21,7 @@ namespace Darragh.DaprInventory.Services.Inventory.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Darragh.DaprInventory.Services.Inventory.API.Model.InventoryItem", b =>
+            modelBuilder.Entity("Darragh.DaprInventory.Services.Inventory.API.InventoryItems.InventoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

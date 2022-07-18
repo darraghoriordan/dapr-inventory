@@ -1,4 +1,6 @@
-﻿namespace Darragh.DaprInventory.Services.Inventory.API.Controllers;
+﻿
+
+using Darragh.DaprInventory.Services.Inventory.API.InventoryItems;
 
 [Route("api/v1/[controller]")]
 [ApiController]

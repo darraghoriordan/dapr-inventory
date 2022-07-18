@@ -1,4 +1,6 @@
-﻿namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure.EntityConfigurations;
+﻿using Darragh.DaprInventory.Services.Inventory.API.InventoryItems;
+
+namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure.EntityConfigurations;
 
 public class InventoryItemEntityTypeConfiguration : IEntityTypeConfiguration<InventoryItem>
 {

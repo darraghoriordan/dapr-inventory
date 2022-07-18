@@ -1,4 +1,6 @@
-﻿namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure;
+﻿using Darragh.DaprInventory.Services.Inventory.API.InventoryItems;
+
+namespace Darragh.DaprInventory.Services.Inventory.API.Infrastructure;
 
 public class InventoryDbContext : DbContext
 {
