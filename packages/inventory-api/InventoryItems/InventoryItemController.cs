@@ -58,17 +58,20 @@ public class InventoryItemController : ControllerBase
             return NotFound("Location/product not found");
         }
 
-        this._logger.LogInformation("Existing amount", result);
+        this._logger.LogInformation("Existing amount {result}", result.AvailableStock);
 
         result.SetStock(stockAmount);
         _context.Update(result);
 
-        this._logger.LogInformation("New amount", result);
+        this._logger.LogInformation("New amount {result}", result.AvailableStock);
 
         _context.ChangeTracker.DetectChanges();
         this._logger.LogInformation("Logging changes detected in context", _context.ChangeTracker.DebugView.LongView);
 
         await _context.SaveChangesAsync();
+
+        // we always raise this!
+        await RaiseAdjustStockEvent(productId);
 
         return Ok();
     }
@@ -94,7 +97,32 @@ public class InventoryItemController : ControllerBase
         _context.InventoryItems.Add(new InventoryItem(0, item.ProductId, item.LocationId, item.AvailableStock));
         await _context.SaveChangesAsync();
 
+        if (item.AvailableStock > 0)
+        {
+            await RaiseAdjustStockEvent(item.ProductId);
+        }
+
         return Ok();
+    }
+
+    private async Task RaiseAdjustStockEvent(string productId)
+    {
+        // if the stock is greater than zero then send a notification
+        // there's no error handling here but there would be
+
+        var newTotal = await _context.InventoryItems
+.Where(ci => ci.ProductId.Equals(productId))
+.SumAsync(x => x.AvailableStock);
+
+        var queues = new List<string>() { "daprinventory-pubsub-sqs", "daprinventory-pubsub-rmq" };
+        var tasks = queues.Select(x => this._daprClient.PublishEventAsync<AvailableStockEventData>(
+             x, "etl.inventory.availableProductInventory",
+             new AvailableStockEventData(productId, newTotal)));
+
+        await Task.WhenAll(tasks);
+
+
+
     }
 
     [HttpGet("location/{locationId}")]

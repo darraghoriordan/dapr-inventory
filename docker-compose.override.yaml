@@ -16,6 +16,22 @@ services:
     zipkin:
         ports:
             - "5411:9411"
+    rabbitmq:
+        ports:
+            - "5672:5672"
+    localstack:
+        container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+        ports:
+            - "127.0.0.1:4566:4566" # LocalStack Gateway
+            - "127.0.0.1:4510-4559:4510-4559" # external services port range
+        environment:
+            - DEBUG=${DEBUG-}
+            - PERSISTENCE=${PERSISTENCE-}
+            - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+            - DOCKER_HOST=unix:///var/run/docker.sock
+        volumes:
+            - "${LOCALSTACK_VOLUME_DIR:-./persist/.localstack}:/var/lib/localstack"
+            - "/var/run/docker.sock:/var/run/docker.sock"
 
     inventory-api-postgres:
         ports:
@@ -68,6 +84,8 @@ services:
                 "-placement-host-address",
                 "dapr-actor-placement:50000",
                 "--enable-api-logging",
+                "--log-level",
+                "info",
                 "--log-as-json",
                 "-components-path",
                 "/dapr-meta/components",
@@ -106,6 +124,8 @@ services:
                 "-placement-host-address",
                 "dapr-actor-placement:50000",
                 "--enable-api-logging",
+                "--log-level",
+                "info",
                 "--log-as-json",
                 "-components-path",
                 "/dapr-meta/components",

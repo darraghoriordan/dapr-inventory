@@ -1,0 +1,27 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+    name: daprinventory-pubsub-sqs
+    namespace: daprinventory
+spec:
+    type: pubsub.snssqs
+    version: v1
+    metadata:
+        - name: region
+          secretKeyRef:
+              name: pubsubsqs
+              key: awsDefaultRegion
+        - name: accessKey
+          secretKeyRef:
+              name: pubsubsqs
+              key: awsAccessKeyId
+        - name: secretKey
+          secretKeyRef:
+              name: pubsubsqs
+              key: awsSecretAccessKey
+        - name: endpoint
+          secretKeyRef:
+              name: pubsubsqs
+              key: endpointUri
+auth:
+    secretStore: daprinventory-secretstore

@@ -8,6 +8,14 @@ services:
         image: redis:alpine
     zipkin:
         image: openzipkin/zipkin-slim
+        depends_on:
+            - localstack # just make sure localstack is ready to go!
+    rabbitmq:
+        image: rabbitmq:3.10-management-alpine
+
+    localstack:
+        image: localstack/localstack
+
     dapr-actor-placement:
         image: "daprio/dapr:1.7.2"
         depends_on:

@@ -568,3 +568,4 @@ openapitools.json
 
 .dapr
 dapr-secrets-local.json
+persist/.localstack
