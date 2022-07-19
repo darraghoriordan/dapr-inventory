@@ -14,7 +14,7 @@ services:
         image: rabbitmq:3.10-management-alpine
 
     localstack:
-        image: localstack/localstack
+        image: "localstack/localstack:0.14"
 
     dapr-actor-placement:
         image: "daprio/dapr:1.8.0"
@@ -42,10 +42,12 @@ services:
 
     products-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.8.0"
+        restart: on-failure # important for local stack delays
         network_mode: "service:products-api" # this means it won't get it's own hostname and you can use the main service hostname like you would on k8s or whatever
         depends_on:
             - products-api
             - dapr-actor-placement
+            - localstack
 
     inventory-api:
         image: ${REGISTRY:-daprinventory}/inventory.api:${TAG:-latest}
@@ -60,6 +62,8 @@ services:
     inventory-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.8.0"
         network_mode: "service:inventory-api"
+        restart: on-failure # important for local stack delays
         depends_on:
             - inventory-api
             - dapr-actor-placement
+            - localstack

@@ -33,9 +33,11 @@ services:
             - DOCKER_HOST=unix:///var/run/docker.sock
             - EAGER_SERVICE_LOADING=0
             - DEBUG=1
+            - USE_LEGACY_PORTS=false
+            - HOSTNAME_EXTERNAL=localstack
         volumes:
-            - "${LOCALSTACK_VOLUME_DIR:-./persist/.localstack}:/var/lib/localstack"
-            - "/var/run/docker.sock:/var/run/docker.sock"
+            - ./.docker-compose/.persist/.localstack:/var/lib/localstack
+            - /var/run/docker.sock:/var/run/docker.sock
 
     inventory-api-postgres:
         ports:
