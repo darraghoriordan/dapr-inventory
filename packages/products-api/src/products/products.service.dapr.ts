@@ -45,12 +45,8 @@ export class ProductsDaprService {
     }
 
     async updateStock(id: string, availableStock: number): Promise<void> {
-        const result = (await this.daprClient.state.get(
-            "products-api-datastore",
-            id
-        )) as any as ProductDto;
+        const result = await this.getOneProduct(id);
 
-        result.key = id;
         result.availableStock = availableStock;
         this.logger.log("updating stock", result);
 

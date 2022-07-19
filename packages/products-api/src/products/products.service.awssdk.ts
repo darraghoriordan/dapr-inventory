@@ -22,7 +22,7 @@ export class ProductsAwsSdkService {
         const putItemCommand = new PutItemCommand({
             TableName: "products",
             Item: {
-                key: {S: model.key},
+                key: {S: `products-api||${model.key}`}, // use dapr name spacing
                 value: {
                     S: JSON.stringify({
                         title: model.title,
@@ -39,11 +39,22 @@ export class ProductsAwsSdkService {
         return model;
     }
 
+    async updateStock(id: string, availableStock: number): Promise<void> {
+        const result = await this.getOneProduct(id);
+
+        result.availableStock = availableStock;
+        this.logger.log("updating stock", result);
+
+        const saveResult = await this.addProduct(result);
+
+        this.logger.log("saved with updated stock", {saveResult});
+    }
+
     async getOneProduct(id: string): Promise<ProductDto> {
         const getItemResult = await this.client.send(
             new GetItemCommand({
                 TableName: "products",
-                Key: {key: {S: id}},
+                Key: {key: {S: `products-api||${id}`}},
             })
         );
 

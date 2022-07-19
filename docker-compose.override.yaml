@@ -31,12 +31,12 @@ services:
             - PERSISTENCE=${PERSISTENCE-}
             - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
             - DOCKER_HOST=unix:///var/run/docker.sock
-            - EAGER_SERVICE_LOADING=0
+            - EAGER_SERVICE_LOADING=1
             - DEBUG=1
             - USE_LEGACY_PORTS=false
             - HOSTNAME_EXTERNAL=localstack
         volumes:
-            - ./.docker-compose/.persist/.localstack:/var/lib/localstack
+            - ./.docker-compose/.persist/localstack:/var/lib/localstack
             - /var/run/docker.sock:/var/run/docker.sock
 
     inventory-api-postgres:

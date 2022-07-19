@@ -8,8 +8,7 @@ services:
         image: redis:alpine
     zipkin:
         image: openzipkin/zipkin-slim
-        depends_on:
-            - localstack # just make sure localstack is ready to go!
+
     rabbitmq:
         image: rabbitmq:3.10-management-alpine
 
@@ -22,6 +21,9 @@ services:
             - seq
             - zipkin
             - redis-state-store
+            - products-api-datastore-instance
+            - inventory-api-postgres
+            - localstack
 
     products-api-datastore-instance:
         image: amazon/dynamodb-local
@@ -36,18 +38,14 @@ services:
             context: ./packages/products-api
         restart: on-failure
         depends_on:
-            - products-api-datastore-instance
-            - zipkin
-            - seq
+            - dapr-actor-placement
 
     products-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.8.0"
-        restart: on-failure # important for local stack delays
+        restart: unless-stopped # important for local stack delays
         network_mode: "service:products-api" # this means it won't get it's own hostname and you can use the main service hostname like you would on k8s or whatever
         depends_on:
             - products-api
-            - dapr-actor-placement
-            - localstack
 
     inventory-api:
         image: ${REGISTRY:-daprinventory}/inventory.api:${TAG:-latest}
@@ -55,15 +53,11 @@ services:
         build:
             context: ./packages/inventory-api
         depends_on:
-            - inventory-api-postgres
-            - zipkin
-            - seq
+            - dapr-actor-placement
 
     inventory-api-dapr: # dapr sidecar for products
         image: "daprio/daprd:1.8.0"
         network_mode: "service:inventory-api"
-        restart: on-failure # important for local stack delays
+        restart: unless-stopped # important for local stack delays
         depends_on:
             - inventory-api
-            - dapr-actor-placement
-            - localstack
