@@ -25,7 +25,7 @@ public static class ProgramExtensions
             builder.Configuration.AddDaprSecretStore(
            "daprinventory-secretstore",
             secretDescriptors,
-           new DaprClientBuilder().Build());
+           new DaprClientBuilder().Build(), new TimeSpan(0, 0, 20));
         }
         catch (System.Exception error)
         {

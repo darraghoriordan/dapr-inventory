@@ -114,8 +114,9 @@ public class InventoryItemController : ControllerBase
 .Where(ci => ci.ProductId.Equals(productId))
 .SumAsync(x => x.AvailableStock);
 
+        // The two queues are called here but you can comment one or both out
         var queues = new List<string>() {
-           //  "daprinventory-pubsub-sqs",
+            "daprinventory-pubsub-sqs",
          "daprinventory-pubsub-rmq" };
         var tasks = queues.Select(x => this._daprClient.PublishEventAsync<AvailableStockEventData>(
              x, "etl.inventory.availableProductInventory",
