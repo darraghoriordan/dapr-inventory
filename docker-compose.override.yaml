@@ -140,3 +140,6 @@ services:
             ]
         volumes:
             - "./dapr:/dapr-meta"
+    frontend-client:
+        ports:
+            - "5400:80"

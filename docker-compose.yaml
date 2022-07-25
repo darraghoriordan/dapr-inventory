@@ -61,3 +61,7 @@ services:
         restart: unless-stopped # important for local stack delays
         depends_on:
             - inventory-api
+    frontend-client:
+        image: ${REGISTRY:-eshopdapr}/frontend.client:${TAG:-latest}
+        build:
+            context: ./packages/frontend

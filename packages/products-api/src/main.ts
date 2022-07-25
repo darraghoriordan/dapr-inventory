@@ -20,7 +20,7 @@ console.log("running nest app creation");
 void (async () => {
     try {
         console.log("creating main module...");
-        const app = await NestFactory.create(MainModule);
+        const app = await NestFactory.create(MainModule, {cors: true}); // we allow all cors sources here. This will be controlled at the gateway.
         console.log("main module created.");
 
         // this is added here to process Dapr.IO publish with content-header: appliction/cloudevents+json. If not included body of post request will be {}
