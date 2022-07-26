@@ -62,6 +62,18 @@ services:
         depends_on:
             - inventory-api
     frontend-client:
-        image: ${REGISTRY:-eshopdapr}/frontend.client:${TAG:-latest}
+        image: ${REGISTRY:-daprinventory}/frontend.client:${TAG:-latest}
         build:
             context: ./packages/frontend
+    envoy-gateway:
+        image: ${REGISTRY:-daprinventory}/envoygateway:${TAG:-latest}
+        build:
+            context: ./packages/envoy-gateway
+        depends_on:
+            - dapr-actor-placement
+    envoy-gateway-dapr:
+        image: "daprio/daprd:1.8.0"
+        network_mode: "service:envoy-gateway"
+        restart: unless-stopped # important for local stack delays
+        depends_on:
+            - envoy-gateway

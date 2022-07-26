@@ -143,3 +143,40 @@ services:
     frontend-client:
         ports:
             - "5400:80"
+    envoy-gateway:
+        environment:
+            # these env vars are used to build the container - you must rebuild if changed
+            - ENVOY_INVENTORY_API_ADDRESS=inventory-api
+            - ENVOY_INVENTORY_API_PORT=80
+            - ENVOY_PRODUCTS_API_ADDRESS=products-api
+            - ENVOY_PRODUCTS_API_PORT=80
+            - ENVOY_DAPR_API_ADDRESS=127.0.0.1
+            - ENVOY_PORT=80
+        ports:
+            - "5103:80"
+            - "15202:8001" # envoy admin port
+            - "50003:50001"
+
+    envoy-gateway-dapr:
+        command:
+            [
+                "./daprd",
+                "-app-id",
+                "envoy-gateway",
+                "-app-port",
+                "80",
+                "-dapr-http-port",
+                "3500",
+                "-placement-host-address",
+                "dapr-actor-placement:50000",
+                "--enable-api-logging",
+                "--log-level",
+                "debug",
+                "--log-as-json",
+                "-components-path",
+                "/dapr-meta/components",
+                "-config",
+                "/dapr-meta/configuration/main-config.yaml",
+            ]
+        volumes:
+            - "./dapr:/dapr-meta"
