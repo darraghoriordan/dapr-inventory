@@ -2,23 +2,26 @@ receivers:
     otlp:
         protocols:
             grpc:
-                #include_metadata: true
+                include_metadata: true
             http:
-                # include_metadata: true
-                cors_allowed_origins: # note: different to docs!
-                    - "*"
-                cors_allowed_headers:
-                    - "*"
-                      # - "authorization"
-                      # - "content-type"
-                      # - "x-requestid"
-                      # - "x-requested-with"
-                      # - "traceparent"
-                      # - "tracestate"
-                      # - "DNT"
-                      # - "sec-ch-ua-platform"
-                      # - "sec-ch-ua-mobile"
-                      # - "sec-ch-ua"
+                cors:
+                    allowed_origins:
+                        - "*"
+                    allowed_headers:
+                        - "*"
+                include_metadata:
+                    true
+
+                    # - "authorization"
+                    # - "content-type"
+                    # - "x-requestid"
+                    # - "x-requested-with"
+                    # - "traceparent"
+                    # - "tracestate"
+                    # - "DNT"
+                    # - "sec-ch-ua-platform"
+                    # - "sec-ch-ua-mobile"
+                    # - "sec-ch-ua"
     zipkin:
 
 processors:
