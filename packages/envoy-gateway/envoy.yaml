@@ -28,7 +28,7 @@ static_resources:
                                                   google_re2: {}
                                                   regex: \*
                                         allow_methods: "GET, POST, PUT"
-                                        allow_headers: "authorization, content-type, x-requestid, x-requested-with"
+                                        allow_headers: "authorization, content-type, x-requestid, x-requested-with, traceparent, tracestate, sec-ch-ua, sec-ch-ua-mobile, sec-ch-ua-platform"
                                         allow_credentials: true
                                     routes:
                                         - name: "inventory-api-route"
@@ -46,6 +46,13 @@ static_resources:
                                               auto_host_rewrite: true
                                               prefix_rewrite: "/v1.0/invoke/products-api/method/"
                                               cluster: dapr
+                                        - name: "tracing-route"
+                                          match:
+                                              prefix: "/trace"
+                                          route:
+                                              auto_host_rewrite: true
+                                              prefix_rewrite: "/v1/traces"
+                                              cluster: tracing
                           http_filters:
                               - name: envoy.filters.http.cors
                               - name: envoy.filters.http.router
@@ -92,3 +99,11 @@ static_resources:
               - socket_address:
                     address: ${ENVOY_INVENTORY_API_ADDRESS}
                     port_value: 80
+        - name: tracing
+          connect_timeout: 0.25s
+          type: strict_dns
+          lb_policy: round_robin
+          hosts:
+              - socket_address:
+                    address: ${ENVOY_TRACING_API_ADDRESS}
+                    port_value: 4318

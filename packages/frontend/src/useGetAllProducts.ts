@@ -9,7 +9,7 @@ type Product = {
 };
 const apiRequest = async (): Promise<Product[]> => {
     const result = await fetch(
-        `${import.meta.env.VITE_API_HOST}/products/dapr`,
+        `${import.meta.env.VITE_API_HOST}/products-api/products/dapr`,
         {
             method: "GET",
             headers: {

@@ -40,7 +40,8 @@ public static class ProgramExtensions
         builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
         {
             tracerProviderBuilder
-            .AddZipkinExporter(c => { c.Endpoint = new Uri(url); })
+            .AddOtlpExporter(c => { c.Endpoint = new Uri("http://otel-collector:4318/v1/traces"); })
+            //  .AddZipkinExporter(c => { c.Endpoint = new Uri(url); })
             .AddConsoleExporter()
             .AddSource(appName)
             .SetResourceBuilder(

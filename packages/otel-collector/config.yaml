@@ -1,0 +1,55 @@
+receivers:
+    otlp:
+        protocols:
+            grpc:
+                #include_metadata: true
+            http:
+                # include_metadata: true
+                cors_allowed_origins: # note: different to docs!
+                    - "*"
+                cors_allowed_headers:
+                    - "*"
+                      # - "authorization"
+                      # - "content-type"
+                      # - "x-requestid"
+                      # - "x-requested-with"
+                      # - "traceparent"
+                      # - "tracestate"
+                      # - "DNT"
+                      # - "sec-ch-ua-platform"
+                      # - "sec-ch-ua-mobile"
+                      # - "sec-ch-ua"
+    zipkin:
+
+processors:
+    batch:
+    attributes:
+        actions:
+            - key: seq
+              action: delete # remove sensitive element
+exporters:
+    zipkin:
+        endpoint: "http://zipkin:9411/api/v2/spans"
+    logging:
+        loglevel: debug
+extensions:
+    health_check:
+    pprof:
+    zpages:
+
+service:
+    extensions: [health_check, pprof, zpages]
+    pipelines:
+        traces:
+            receivers: [otlp, zipkin]
+            processors: [batch]
+            exporters: [zipkin]
+
+        # metrics:
+        #     receivers: [otlp]
+        #     processors: [batch]
+        #     exporters: [otlp]
+        # logs:
+        #     receivers: [otlp]
+        #     processors: [batch]
+        #     exporters: [zipkin]

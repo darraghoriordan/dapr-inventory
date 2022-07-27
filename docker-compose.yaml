@@ -14,6 +14,10 @@ services:
 
     localstack:
         image: "localstack/localstack:0.14"
+    otel-collector:
+        image: ${REGISTRY:-daprinventory}/otelcollector:${TAG:-latest}
+        build:
+            context: ./packages/otel-collector
 
     dapr-actor-placement:
         image: "daprio/dapr:1.8.0"
@@ -24,6 +28,7 @@ services:
             - products-api-datastore-instance
             - inventory-api-postgres
             - localstack
+            - otel-collector
 
     products-api-datastore-instance:
         image: amazon/dynamodb-local

@@ -19,6 +19,17 @@ services:
     rabbitmq:
         ports:
             - "5672:5672"
+    otel-collector:
+        command: ["--config=/etc/otel-collector-config.yaml"]
+        ports:
+            - "1888:1888" # pprof extension
+            - "8888:8888" # Prometheus metrics exposed by the collector
+            - "8889:8889" # Prometheus exporter metrics
+            - "13133:13133" # health_check extension
+            - "4317:4317" # OTLP gRPC receiver
+            - "4318:4318" # OTLP http receiver
+            - "55679:55679" # zpages extension
+            - "5414:9411" # zipkin receiver
     localstack:
         container_name: localstack
         ports:
@@ -71,7 +82,7 @@ services:
             - DAPR_SIDECAR_PORT=3500
             - DAPR_API_SECRET="some-secret"
             - OPEN_TELEMETRY_APP_NAME="products-api-app"
-            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+            - OPEN_TELEMETRY_ZIPKIN_URL=http://otel-collector:9411/api/v2/spans
         ports:
             - "5101:80"
             - "3501:3500" # exposing dapr sidecar comms for testing
@@ -109,7 +120,7 @@ services:
             - ASPNETCORE_ENVIRONMENT=Development
             - ASPNETCORE_URLS=http://0.0.0.0:80
             - OPEN_TELEMETRY_APP_NAME="inventory-api-app"
-            - OPEN_TELEMETRY_ZIPKIN_URL=http://zipkin:9411/api/v2/spans
+            - OPEN_TELEMETRY_ZIPKIN_URL=http://otel-collector:9411/api/v2/spans
         ports:
             - "5102:80"
             - "3502:3500" # exposing dapr sidecar comms for testing
@@ -152,6 +163,7 @@ services:
             - ENVOY_PRODUCTS_API_PORT=80
             - ENVOY_DAPR_API_ADDRESS=127.0.0.1
             - ENVOY_PORT=80
+            - ENVOY_TRACING_API_ADDRESS=otel-collector
         ports:
             - "5103:80"
             - "15202:8001" # envoy admin port
