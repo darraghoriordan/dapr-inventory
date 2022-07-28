@@ -115,17 +115,18 @@ public class InventoryItemController : ControllerBase
 .SumAsync(x => x.AvailableStock);
 
         // The two queues are called here but you can comment one or both out
-        var queues = new List<string>() {
-            "daprinventory-pubsub-sqs",
-         "daprinventory-pubsub-rmq" };
+        var secondTotal = newTotal + 5;
+        var queues = new Dictionary<string, int>
+        {
+            ["daprinventory-pubsub-sqs"] = newTotal,
+            ["daprinventory-pubsub-rmq"] = secondTotal
+        };
+
         var tasks = queues.Select(x => this._daprClient.PublishEventAsync<AvailableStockEventData>(
-             x, "etl.inventory.availableProductInventory",
-             new AvailableStockEventData(productId, newTotal)));
+             x.Key, "etl.inventory.availableProductInventory",
+             new AvailableStockEventData(productId, x.Value)));
 
         await Task.WhenAll(tasks);
-
-
-
     }
 
     [HttpGet("location/{locationId}")]
