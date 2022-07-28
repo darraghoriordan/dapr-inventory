@@ -2,7 +2,7 @@ import {initTelemetry} from "./core-config/OpenTelemetry";
 // ----- this has to come before imports! -------
 initTelemetry({
     appName: process.env.OPEN_TELEMETRY_APP_NAME || "",
-    zipkinUrl: process.env.OPEN_TELEMETRY_ZIPKIN_URL || "",
+    telemetryUrl: process.env.OPEN_TELEMETRY_URL || "",
 });
 console.log("initialised telemetry");
 // -------------
@@ -24,6 +24,7 @@ void (async () => {
         console.log("main module created.");
 
         // this is added here to process Dapr.IO publish with content-header: appliction/cloudevents+json. If not included body of post request will be {}
+        // must support cloud events type
         app.use(bodyParser.json({type: "application/cloudevents+json"}));
         // add this as other post with content-type: json will fail like login will fail due to bodyPaser code above
         app.use(bodyParser.json());

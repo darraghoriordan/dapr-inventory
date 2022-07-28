@@ -8,10 +8,12 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.AddConfigurationFromDapr();
 
-builder.AddCustomSerilog();
+
 builder.AddCustomSwagger();
-builder.AddCustomDatabase();
+
 builder.AddCustomOpenTelemetry();
+builder.AddCustomSerilog();
+builder.AddCustomDatabase();
 builder.AddCustomHealthChecks();
 
 builder.Services.AddDaprClient(c =>
@@ -41,6 +43,7 @@ app.UseCloudEvents();
 app.MapGet("/", () => Results.LocalRedirect("~/swagger"));
 app.MapControllers();
 app.MapSubscribeHandler();
+
 app.MapHealthChecks("/hc", new HealthCheckOptions()
 {
     Predicate = _ => true,

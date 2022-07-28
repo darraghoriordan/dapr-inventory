@@ -1,5 +1,6 @@
 import {Module} from "@nestjs/common";
 import {ConfigModule} from "@nestjs/config";
+import {DaprPubSubController} from "./dapr-pubsub.controller";
 import {DaprAppConfigProvider} from "./DaprAppConfigProvider";
 import {DaprClientProvider} from "./DaprClientProvider";
 import {DaprCommsConfigurationService} from "./DaprCommsConfigurationService";
@@ -17,6 +18,7 @@ import configVariables from "./DaprCommsConfigurationVariables";
         DaprClientProvider,
         DaprAppConfigProvider,
     ],
+    controllers: [DaprPubSubController],
     exports: [DaprClientProvider, DaprAppConfigProvider],
 })
 export class DaprCommsModule {

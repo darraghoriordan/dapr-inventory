@@ -4,7 +4,6 @@ using Npgsql;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
-using Dapr;
 using Darragh.DaprInventory.Services.Inventory.API.Healthchecks;
 using Serilog.Enrichers.Span;
 using OpenTelemetry.Logs;
@@ -27,22 +26,22 @@ public static class ProgramExtensions
             secretDescriptors,
            new DaprClientBuilder().Build(), new TimeSpan(0, 0, 20));
         }
-        catch (System.Exception error)
+        catch (System.Exception)
         {
-            Log.Logger.Error("Couldn't get settings from dapr sidecar", error);
+            //Log.Logger.Error("Couldn't get settings from dapr sidecar", error);
             throw;
         }
     }
     public static void AddCustomOpenTelemetry(this WebApplicationBuilder builder)
     {
-        var url = builder.Configuration["OPEN_TELEMETRY_ZIPKIN_URL"];
+        var url = builder.Configuration["OPEN_TELEMETRY_URL"];
         var appName = builder.Configuration["OPEN_TELEMETRY_APP_NAME"];
         builder.Services.AddOpenTelemetryTracing(tracerProviderBuilder =>
         {
             tracerProviderBuilder
-            .AddOtlpExporter(c => { c.Endpoint = new Uri("http://otel-collector:4318/v1/traces"); })
+            .AddOtlpExporter(c => { c.Endpoint = new Uri(url); c.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc; })
             //  .AddZipkinExporter(c => { c.Endpoint = new Uri(url); })
-            .AddConsoleExporter()
+            //.AddConsoleExporter()
             .AddSource(appName)
             .SetResourceBuilder(
                 ResourceBuilder.CreateDefault()
@@ -59,19 +58,19 @@ public static class ProgramExtensions
         .AddCheck<DaprHealthCheck>("dapr");
     public static void AddCustomSerilog(this WebApplicationBuilder builder)
     {
-        var seqServerUrl = builder.Configuration["seqUrl"];
+        builder.Host.UseSerilog((webBuilderContext, loggingConfiguration) =>
+        {
+            var seqServerUrl = builder.Configuration["seqUrl"];
 
-        Log.Logger = new LoggerConfiguration()
+            loggingConfiguration
             .ReadFrom.Configuration(builder.Configuration)
             .WriteTo.Console()
             .WriteTo.Seq(seqServerUrl)
             .Enrich.WithDemystifiedStackTraces()
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ApplicationName", AppName)
-            .Enrich.WithSpan()
-            .CreateLogger();
-
-        builder.Host.UseSerilog();
+            .Enrich.WithSpan();
+        });
     }
 
     public static void AddCustomSwagger(this WebApplicationBuilder builder) =>
@@ -107,13 +106,13 @@ public static class ProgramExtensions
         // migrations instead.
         using var scope = app.Services.CreateScope();
 
-        var retryPolicy = CreateRetryPolicy(app.Configuration, Log.Logger);
+        var retryPolicy = CreateRetryPolicy(app.Configuration);
         var context = scope.ServiceProvider.GetRequiredService<InventoryDbContext>();
 
         retryPolicy.Execute(context.Database.Migrate);
     }
 
-    private static Policy CreateRetryPolicy(IConfiguration configuration, Serilog.ILogger logger)
+    private static Policy CreateRetryPolicy(IConfiguration configuration)
     {
         // Only use a retry policy if configured to do so.
         // When running in an orchestrator/K8s, it will take care of restarting failed services.
@@ -124,13 +123,13 @@ public static class ProgramExtensions
                     sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
                     onRetry: (exception, retry, timeSpan) =>
                     {
-                        logger.Warning(
-                            exception,
-                            "Exception {ExceptionType} with message {Message} detected during database migration (retry attempt {retry}, connection {connection})",
-                            exception.GetType().Name,
-                            exception.Message,
-                            retry,
-                            configuration["inventoryDbConnectionString"]);
+                        // logger.Warning(
+                        //     exception,
+                        //     "Exception {ExceptionType} with message {Message} detected during database migration (retry attempt {retry}, connection {connection})",
+                        //     exception.GetType().Name,
+                        //     exception.Message,
+                        //     retry,
+                        //     configuration["inventoryDbConnectionString"]);
                     }
                 );
         }

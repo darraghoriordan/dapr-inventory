@@ -15,15 +15,15 @@ import {OTLPTraceExporter} from "@opentelemetry/exporter-trace-otlp-http";
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.WARN);
 export const initTelemetry = (config: {
     appName: string;
-    zipkinUrl: string;
+    telemetryUrl: string;
 }): void => {
     const exporter = new OTLPTraceExporter({
         // optional - url default value is http://localhost:4318/v1/traces
-        url: "http://otel-collector:4318/v1/traces",
+        url: config.telemetryUrl, // "http://otel-collector:4318/v1/traces",
     });
     // const exporter = new ZipkinExporter({
     //     serviceName: "zipkin instance",
-    //     url: config.zipkinUrl,
+    //     url: config.telemetryUrl,
     // });
 
     const resource = Resource.default().merge(

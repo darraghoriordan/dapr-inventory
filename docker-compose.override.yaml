@@ -82,7 +82,7 @@ services:
             - DAPR_SIDECAR_PORT=3500
             - DAPR_API_SECRET="some-secret"
             - OPEN_TELEMETRY_APP_NAME="products-api-app"
-            - OPEN_TELEMETRY_ZIPKIN_URL=http://otel-collector:9411/api/v2/spans
+            - OPEN_TELEMETRY_URL=http://otel-collector:4318/v1/traces
         ports:
             - "5101:80"
             - "3501:3500" # exposing dapr sidecar comms for testing
@@ -120,7 +120,7 @@ services:
             - ASPNETCORE_ENVIRONMENT=Development
             - ASPNETCORE_URLS=http://0.0.0.0:80
             - OPEN_TELEMETRY_APP_NAME="inventory-api-app"
-            - OPEN_TELEMETRY_ZIPKIN_URL=http://otel-collector:9411/api/v2/spans
+            - OPEN_TELEMETRY_URL=http://otel-collector:4317
         ports:
             - "5102:80"
             - "3502:3500" # exposing dapr sidecar comms for testing
