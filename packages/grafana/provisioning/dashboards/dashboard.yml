@@ -20,6 +20,6 @@ providers:
       allowUiUpdates: true
       options:
           # <string, required> path to dashboard files on disk. Required
-          path: /etc/grafana/dashboards
+          path: /etc/grafana/provisioning/dashboards
           # <bool> use folder names from filesystem to create folders in Grafana
           foldersFromFilesStructure: true
