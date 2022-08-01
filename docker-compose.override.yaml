@@ -36,7 +36,7 @@ services:
             - "--web.page-title=DaprInventoryTimeseries"
             - "--log.level=debug"
         expose:
-            - "9000:9090"
+            - "9090:9090"
     alertmanager:
         volumes:
             - ./packages/alertmanager:/etc/alertmanager
