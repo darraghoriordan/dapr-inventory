@@ -19,6 +19,49 @@ services:
     rabbitmq:
         ports:
             - "5672:5672"
+    prometheus:
+        volumes:
+            - ./.docker-compose/.persist/prometheus/runtime:/prometheus
+            - ./packages/prometheus:/etc/prometheus
+        command:
+            - "--web.listen-address=0.0.0.0:9090"
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            # - "--web.console.libraries=/etc/prometheus/console_libraries"
+            # - "--web.console.templates=/etc/prometheus/consoles"
+            # - "--storage.tsdb.retention.time=200h"
+            - "--web.enable-lifecycle"
+            - "--web.enable-admin-api"
+            - "--web.enable-remote-write-receiver"
+            - "--web.page-title=DaprInventoryTimeseries"
+            - "--log.level=debug"
+        expose:
+            - "9000:9090"
+    alertmanager:
+        volumes:
+            - ./packages/alertmanager:/etc/alertmanager
+        command:
+            - "--config.file=/etc/alertmanager/config.yml"
+            - "--storage.path=/alertmanager"
+        restart: unless-stopped
+        expose:
+            - "9093:9093"
+    pushgateway:
+        expose:
+            - "9091:9091"
+    grafana:
+        volumes:
+            - ./.docker-compose/.persist/grafana:/var/lib/grafana
+            - ./packages/grafana:/etc/grafana
+        environment:
+            - GF_SECURITY_ADMIN_USER=auser
+            - GF_SECURITY_ADMIN_PASSWORD=apassword
+            - GF_USERS_ALLOW_SIGN_UP=false
+            - GF_DEFAULT_APP_MODE=development
+            - GF_LOG_LEVEL=debug
+            - TERM=linux
+        expose:
+            - 9000:3000
     otel-collector:
         command: ["--config=/etc/otel-collector-config.yaml"]
         ports:

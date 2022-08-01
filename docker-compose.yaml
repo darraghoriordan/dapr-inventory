@@ -18,6 +18,27 @@ services:
         image: ${REGISTRY:-daprinventory}/otelcollector:${TAG:-latest}
         build:
             context: ./packages/otel-collector
+        depends_on:
+            - grafana
+    prometheus:
+        image: prom/prometheus:v2.35.0
+        restart: unless-stopped
+        depends_on:
+            - pushgateway
+            - alertmanager
+    alertmanager:
+        image: prom/alertmanager:v0.24.0
+        restart: unless-stopped
+        depends_on:
+            - pushgateway
+    pushgateway:
+        image: prom/pushgateway:v1.4.3
+        restart: unless-stopped
+    grafana:
+        image: grafana/grafana-oss:9.0.5
+        restart: unless-stopped
+        depends_on:
+            - prometheus
 
     dapr-actor-placement:
         image: "daprio/dapr:1.8.0"
