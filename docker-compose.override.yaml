@@ -211,6 +211,7 @@ services:
             - "50003:50001"
 
     envoy-gateway-dapr:
+        container_name: envoy-gateway-dapr
         command:
             [
                 "./daprd",

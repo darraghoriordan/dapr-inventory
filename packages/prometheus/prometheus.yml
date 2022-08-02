@@ -22,17 +22,21 @@ scrape_configs:
     #   scrape_interval: 5s
     #   static_configs:
     #       - targets: ["cadvisor:8080"]
+    - job_name: "dapr"
+      scrape_interval: 5s
+      static_configs:
+          - targets: ["envoy-gateway:9090"]
 
     - job_name: "prometheus"
       scrape_interval: 10s
       static_configs:
           - targets: ["prometheus:9090", "localhost:9090"]
 
-    # - job_name: "pushgateway"
-    #   scrape_interval: 10s
-    #   honor_labels: true
-    #   static_configs:
-    #       - targets: ["pushgateway:9091"]
+    - job_name: "pushgateway"
+      scrape_interval: 10s
+      honor_labels: true
+      static_configs:
+          - targets: ["pushgateway:9091"]
 # remote_write:
 #     - url: "<Your Prometheus remote_write endpoint>"
 #       basic_auth:
@@ -49,8 +53,3 @@ scrape_configs:
 #    scrape_interval: 10s
 #    static_configs:
 #      - targets: ['nginxexporter:9113']
-
-#  - job_name: 'aspnetcore'
-#    scrape_interval: 10s
-#    static_configs:
-#      - targets: ['eventlog-proxy:5000', 'eventlog:5000']
