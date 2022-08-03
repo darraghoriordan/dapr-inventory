@@ -35,8 +35,8 @@ exporters:
         endpoint: "http://zipkin:9411/api/v2/spans"
     logging:
         loglevel: debug
-    # prometheus:
-    #     endpoint: "prometheus:9091"
+    prometheus:
+        endpoint: "127.0.0.1:9091" # this is weird because the exporter is actually an endpoint that must be scraped
 extensions:
     health_check:
     pprof:
@@ -50,10 +50,10 @@ service:
             processors: [batch]
             exporters: [zipkin]
 
-        # metrics:
-        #     receivers: [otlp]
-        #     processors: [batch]
-        #     exporters: [prometheus]
+        metrics:
+            receivers: [otlp]
+            processors: [batch]
+            exporters: [prometheus]
         # logs:
         #     receivers: [otlp]
         #     processors: [batch]

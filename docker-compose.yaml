@@ -20,6 +20,7 @@ services:
             context: ./packages/otel-collector
         depends_on:
             - grafana
+            - pushgateway
     prometheus:
         image: prom/prometheus:v2.35.0
         restart: unless-stopped

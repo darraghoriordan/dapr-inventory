@@ -25,13 +25,21 @@ scrape_configs:
     - job_name: "dapr"
       scrape_interval: 5s
       static_configs:
-          - targets: ["envoy-gateway:9090"]
-
+          - targets:
+                [
+                    "envoy-gateway:9090",
+                    "products-api:9090",
+                    "inventory-api:9090",
+                    "dapr-actor-placement:9090",
+                    "otel-collector:9091",
+                ]
+    # scrape yourself!
     - job_name: "prometheus"
       scrape_interval: 10s
       static_configs:
-          - targets: ["prometheus:9090", "localhost:9090"]
+          - targets: ["prometheus:9090"]
 
+    # This isn't actually used for anything at the moment
     - job_name: "pushgateway"
       scrape_interval: 10s
       honor_labels: true

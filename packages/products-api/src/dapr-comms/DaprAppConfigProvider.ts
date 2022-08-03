@@ -13,8 +13,8 @@ export const DaprAppConfigProvider = {
             return appConfig;
         } catch (error) {
             console.error("Couldn't init dapr config", error);
-            // maybe even process exit here
-            throw error;
+            // maybe even process exit here. we need to tell the container to restart
+            process.exit(1);
         }
     },
     inject: [DaprClient],

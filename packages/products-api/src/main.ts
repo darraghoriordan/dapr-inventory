@@ -1,4 +1,4 @@
-import {initTelemetry} from "./core-config/OpenTelemetry";
+import {initTelemetry} from "./core-logger/OpenTelemetry";
 // ----- this has to come before imports! -------
 initTelemetry({
     appName: process.env.OPEN_TELEMETRY_APP_NAME || "",
