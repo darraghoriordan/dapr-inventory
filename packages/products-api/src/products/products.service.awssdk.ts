@@ -64,11 +64,18 @@ export class ProductsAwsSdkService {
     }
 
     async getAllProductsScan(): Promise<ProductDto[]> {
+        // get a trace context
         const tracer = opentelemetry.trace.getTracer("basic");
+
+        // create a span
         const span = tracer.startSpan("getAllProductsScan");
+
+        // do some work
         const products = await this.client.send(
             new ScanCommand({TableName: "products"})
         );
+
+        // add some meta data to the span
         span.setAttribute("thisAttribute", "this is a value set manually");
         span.addEvent("got the data from store", {
             ["manualEventAttribute"]: "this is a value",
@@ -76,6 +83,8 @@ export class ProductsAwsSdkService {
         const mappedProducts = (products.Items || []).map((i) => {
             return this.mapOne(i);
         });
+
+        // finalise the span
         span.end();
         return mappedProducts;
     }

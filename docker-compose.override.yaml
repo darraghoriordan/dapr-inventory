@@ -46,7 +46,7 @@ services:
             - "9093:9093"
     pushgateway:
         expose:
-            - "9091:9091"
+            - "9091"
         ports:
             - "9091:9091"
     grafana:
