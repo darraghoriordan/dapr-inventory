@@ -1,6 +1,4 @@
 version: "3.4"
-volumes:
-    di-dynamo-data:
 
 services:
     redis-state-store:
